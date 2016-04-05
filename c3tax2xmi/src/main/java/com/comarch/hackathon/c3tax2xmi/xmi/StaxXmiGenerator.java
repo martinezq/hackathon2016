@@ -41,13 +41,20 @@ public class StaxXmiGenerator {
 			writePackageStart(UUID.randomUUID().toString(), "C3 Taxonomy");
 			
 			for(RdfSubject subject: subjects) {
-				writeClassStart(UUID.randomUUID().toString(), subject.getId());
+				if(subject.getTitle() == null) {
+					continue;
+				}
+				
+				writeClassStart(UUID.randomUUID().toString(), subject.getTitle());
+				writeProperty(UUID.randomUUID().toString(), "Title", "uml:Property");
 				writeClassEnd();
 				
-				if(count++ > 1) {
+				if(++count >= 10) {
 					break;
 				}
 			}
+			
+			System.out.println("Count = " + count);
 			
 			writePackageEnd();
 			
@@ -112,9 +119,30 @@ public class StaxXmiGenerator {
 		writer.writeAttribute(xmiNs, "id", id);
 		writer.writeAttribute("name", name);
 		writer.writeAttribute("visibility", "package");
+		
+		//writer.writeStartElement("properties");
+		//writer.writeAttribute("documentation", "Ala ma kota");
+		
+		//writer.writeEndElement();
 	}
 	
 	private void writeClassEnd() throws XMLStreamException {
+		writer.writeEndElement();
+	}
+	
+	private void writeProperty(String id, String name, String type) throws XMLStreamException {
+		/*
+		 * 	<ownedAttribute xmi:type="uml:Property" name="Amount" xmi:id="BOUML_0x1f518_1" visibility="protected">
+				<type xmi:type="uml:Class" xmi:idref="BOUML_datatype_0"/>
+			</ownedAttribute>
+		 */
+		writer.writeStartElement("ownedAttribute");
+		
+		writer.writeAttribute(xmiNs, "type", "uml:property");
+		writer.writeAttribute(xmiNs, "id", id);
+		writer.writeAttribute("name", name);
+		writer.writeAttribute("visibility", "public");
+		
 		writer.writeEndElement();
 	}
 	
