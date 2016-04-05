@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="2.1" xmlns:uml="http://schema.omg.org/spec/UML/2.1" xmlns:xmi="http://schema.omg.org/spec/XMI/2.1">
+	<xmi:Documentation exporter="Bouml" exporterVersion="1.5.6"/>
+	<uml:Model xmi:type="uml:Model" xmi:id="themodel" name="sample">
+		<packagedElement xmi:type="uml:Package" xmi:id="BOUML_0x81_22" name ="sample">
+			<packagedElement xmi:type="uml:Package" xmi:id="BOUML_0x1f418_22" name ="ERP">
+				<packagedElement xmi:type="uml:Class" name="Customer" xmi:id="BOUML_0x1f418_4" visibility="package" isAbstract="false" >
+					<ownedAttribute xmi:type="uml:Property" name="CreditLimit" xmi:id="BOUML_0x1f498_1" visibility="protected">
+						<type xmi:type="uml:Class" xmi:idref="BOUML_datatype_0"/>
+					</ownedAttribute>
+				</packagedElement>
+				<packagedElement xmi:type="uml:Class" name="Order" xmi:id="BOUML_0x1f498_4" visibility="package" isAbstract="false" >
+					<ownedAttribute xmi:type="uml:Property" name="Amount" xmi:id="BOUML_0x1f518_1" visibility="protected">
+						<type xmi:type="uml:Class" xmi:idref="BOUML_datatype_0"/>
+					</ownedAttribute>
+				</packagedElement>
+			</packagedElement>
+		</packagedElement>
+		<packagedElement xmi:type="uml:DataType" xmi:id="BOUML_datatype_0" name="int"/>
+	</uml:Model>
+</xmi:XMI>
