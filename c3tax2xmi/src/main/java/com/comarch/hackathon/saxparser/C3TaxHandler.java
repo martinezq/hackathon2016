@@ -44,13 +44,13 @@ public class C3TaxHandler extends DefaultHandler {
     }
     
     public RdfSubject getRootElement() {
-        int count = 0;
+        //int count = 0;
         RdfSubject result = null;
         if (subjects != null) {
             for (RdfSubject subject : subjects.values()) {
                 if (ROOT.equalsIgnoreCase(subject.getId())) {
                     result = subject;
-                    count ++;
+                    break;
                 }
                 //if (subject.getParent() == null) {
                 //    result = subject;
