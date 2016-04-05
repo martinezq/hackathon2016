@@ -6,10 +6,12 @@ import org.eclipse.uml2.uml.Model;
 import org.eclipse.uml2.uml.UMLFactory;
 
 import java.io.IOException;
+import java.util.Map;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 
 public class XmiGenerator {
 	
@@ -38,6 +40,7 @@ public class XmiGenerator {
 		resource.getContents().add(pack);
 		try {
 			resource.save(null);
+			System.out.println("Saved!");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -45,7 +48,14 @@ public class XmiGenerator {
 
 	public void generate() {
 		Model model = createModel("Sample");
-		URI uri = URI.createURI("file:/c:/temp/test").appendFileExtension("xmi");
+		Package main = createPackage(model, "C3 Taxonomy");
+		createClass(main, "Test class", false);
+		
+		Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
+	    Map<String, Object> m = reg.getExtensionToFactoryMap();
+	    m.put("xmi", new XMIResourceFactoryImpl());
+		
+		URI uri = URI.createURI("test").appendFileExtension("xmi");
 		System.out.println("Saving to " + uri);
 		save(model, uri);
 	}
