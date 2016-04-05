@@ -27,13 +27,13 @@ public class Main {
 
 
         
-        try {
+        /*try {
             C3TaxParser parser = new C3TaxParser();
             parser.parse(new File("d:\\Projekty\\Hackathon\\Codding Challange\\em_short.rdf"));
             parser.getParsedElements();
         } catch (Exception ex) {
             ex.printStackTrace();
-        }
+        }*/
     }
 
 }
