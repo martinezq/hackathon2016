@@ -3,6 +3,7 @@ package com.comarch.hackathon.saxparser;
 import com.comarch.hackathon.saxparser.model.RdfAttribute;
 import com.comarch.hackathon.saxparser.model.RdfElement;
 import com.comarch.hackathon.saxparser.model.RdfSubject;
+import com.comarch.hackathon.saxparser.util.RdfUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -147,14 +148,21 @@ public class C3TaxHandler extends DefaultHandler {
     public void fillReferences() {
         if (subjects != null) {
             for (RdfSubject subject : subjects.values()) {
-                List<RdfElement> elements = subject.getElements();
-                if (elements != null) {
-                    for (RdfElement element : elements) {
-                        if (CHILD_OF_TAG.equalsIgnoreCase(element.getName())) {
-                            RdfSubject parent = findReference(element);
-                            subject.setParent(parent);
-                        } else if (REF_TO_TAG.equalsIgnoreCase(element.getName())) {
-                            RdfSubject ref = findReference(element);
+                
+                RdfElement childOfElement = RdfUtils.getElement(subject.getElements(), CHILD_OF_TAG);
+                if (childOfElement != null) {
+                    RdfSubject parent = findReference(childOfElement);
+                    if (parent != null) {
+                        subject.setParent(parent);
+                        parent.getChilds().add(subject);
+                    }
+                }
+                
+                Collection<RdfElement> refToElements = RdfUtils.getElements(subject.getElements(), REF_TO_TAG);
+                if (refToElements != null) {
+                    for (RdfElement element : refToElements) {
+                        RdfSubject ref = findReference(element);
+                        if (ref != null ) {
                             subject.getReferences().add(ref);
                         }
                     }
@@ -165,16 +173,7 @@ public class C3TaxHandler extends DefaultHandler {
     
     private RdfSubject findReference(RdfElement refElement) {
         if (subjects != null) {
-            String id = null;
-            if (refElement.getAttributes() != null) {
-                for (RdfAttribute attr : refElement.getAttributes()) {
-                    if (REF_RES_TAG.equalsIgnoreCase(attr.getName())) {
-                        id = attr.getValue();
-                        break;
-                    }
-                }
-            }
-            
+            String id = RdfUtils.getAttributeValue(refElement.getAttributes(), REF_RES_TAG);
             if (id != null) {
                 return subjects.get(id);
             }

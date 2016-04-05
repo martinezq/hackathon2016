@@ -1,5 +1,6 @@
 package com.comarch.hackathon.saxparser.model;
 
+import com.comarch.hackathon.saxparser.util.RdfUtils;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +21,7 @@ public class RdfSubject extends RdfBaseObject {
     private List<RdfElement> elements = new ArrayList<>();
     
     private RdfSubject parent = null;
+    private List<RdfSubject> childs = new ArrayList<>();
     private List<RdfSubject> references = new ArrayList<>();
             
     public String getId() {
@@ -51,14 +53,7 @@ public class RdfSubject extends RdfBaseObject {
     }
     
     public String getAttributeValue(String attrName) {
-        if (attributes != null && attrName != null) {
-            for (RdfAttribute attr : attributes) {
-                if (attrName.equalsIgnoreCase(attr.getName())) {
-                    return attr.getValue();
-                }
-            }
-        }
-        return null;
+        return RdfUtils.getAttributeValue(attributes, attrName);
     }
 
     public List<RdfAttribute> getAttributes() {
@@ -70,14 +65,7 @@ public class RdfSubject extends RdfBaseObject {
     }
 
     public String getElementValue(String elemName) {
-        if (elements != null && elemName != null) {
-            for (RdfElement elem : elements) {
-                if (elemName.equalsIgnoreCase(elem.getName())) {
-                    return elem.getValue();
-                }
-            }
-        }
-        return null;
+        return RdfUtils.getElementValue(elements, elemName);
     }
     
     public List<RdfElement> getElements() {
@@ -94,6 +82,14 @@ public class RdfSubject extends RdfBaseObject {
 
     public void setParent(RdfSubject parent) {
         this.parent = parent;
+    }
+
+    public List<RdfSubject> getChilds() {
+        return childs;
+    }
+
+    public void setChilds(List<RdfSubject> childs) {
+        this.childs = childs;
     }
 
     public List<RdfSubject> getReferences() {
