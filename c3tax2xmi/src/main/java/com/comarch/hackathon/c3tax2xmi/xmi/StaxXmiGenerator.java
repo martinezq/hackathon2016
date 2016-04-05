@@ -1,6 +1,7 @@
 package com.comarch.hackathon.c3tax2xmi.xmi;
 
 import java.io.FileWriter;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -17,11 +18,11 @@ public class StaxXmiGenerator {
 	
 	XMLStreamWriter writer;
 	
-	List<RdfSubject> subjects;
+	Collection<RdfSubject> subjects;
 
 	String modelId = UUID.randomUUID().toString();
 	
-	public StaxXmiGenerator(List<RdfSubject> subjects) {
+	public StaxXmiGenerator(Collection<RdfSubject> subjects) {
 		this.subjects = subjects;
 	}
 
@@ -40,7 +41,7 @@ public class StaxXmiGenerator {
 			writePackageStart(UUID.randomUUID().toString(), "C3 Taxonomy");
 			
 			for(RdfSubject subject: subjects) {
-				writeClassStart(UUID.randomUUID().toString(), "test" + UUID.randomUUID().toString());
+				writeClassStart(UUID.randomUUID().toString(), subject.getId());
 				writeClassEnd();
 				
 				if(count++ > 1) {
@@ -51,17 +52,6 @@ public class StaxXmiGenerator {
 			writePackageEnd();
 			
 			writeModelEnd();
-/*
-			writer.writeStartElement("carname");
-			writer.writeAttribute("type", "formula one");
-			writer.writeCharacters("Ferrari 101");
-			writer.writeEndElement();
-
-			writer.writeStartElement("carname");
-			writer.writeAttribute("type", "sports");
-			writer.writeCharacters("Ferrari 202");
-			writer.writeEndElement();
-*/
 			writeHeaderEnd();
 
 			writer.flush();
