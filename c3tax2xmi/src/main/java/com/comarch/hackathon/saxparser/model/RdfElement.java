@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  *
- * @author Dziubek
+ * @author szlachtap
  */
 public class RdfElement extends RdfBaseObject {
     List<RdfAttribute> attributes = new ArrayList<>();

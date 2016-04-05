@@ -2,7 +2,7 @@ package com.comarch.hackathon.saxparser.model;
 
 /**
  *
- * @author Dziubek
+ * @author szlachtap
  */
 public abstract class RdfBaseObject {
     private String name;

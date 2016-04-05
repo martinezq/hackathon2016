@@ -5,15 +5,16 @@ import java.util.List;
 
 /**
  *
- * @author Dziubek
+ * @author szlachtap
  */
 public class RdfSubject extends RdfBaseObject {
     
     public static final String ATTR_ABOUT = "RDF:ABOUT";
+    public static final String ELEM_UUID = "PROPERTY:UUID";
     public static final String ELEM_TYPE = "RDF:TYPE";
     public static final String ELEM_LABEL = "RDFS:LABEL";
     public static final String ELEM_DESCRIPTION = "PROPERTY:DESCRIPTION";
-    public static final String ELEM_UUID = "PROPERTY:UUID";
+    public static final String ELEM_TITLE = "PROPERTY:TITLE";
     
     private List<RdfAttribute> attributes = new ArrayList<>();
     private List<RdfElement> elements = new ArrayList<>();
@@ -43,6 +44,10 @@ public class RdfSubject extends RdfBaseObject {
     
     public String getDescription() {
         return getElementValue(ELEM_DESCRIPTION);
+    }
+    
+    public String getTitle() {
+        return getElementValue(ELEM_TITLE);
     }
     
     public String getAttributeValue(String attrName) {
