@@ -53,5 +53,9 @@ public class C3TaxParser {
     public Collection<RdfSubject> getParsedElements() {
         return handler.getSubjects();
     }
+    
+    public RdfSubject getRootElement() {
+        return handler.getRootElement();
+    }
 
 }

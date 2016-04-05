@@ -16,6 +16,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 public class C3TaxHandler extends DefaultHandler {
 
+    public static final String ROOT = "http://192.168.1.25/em/index.php/Special:URIResolver/C3_Taxonomy";
     public static final String SUB_TAG = "SWIVT:SUBJECT";
     public static final String REF_TO_TAG = "PROPERTY:IS_REFERRING_TO";
     public static final String CHILD_OF_TAG = "PROPERTY:IS_CHILD_OF";
@@ -36,7 +37,28 @@ public class C3TaxHandler extends DefaultHandler {
     }
             
     public Collection<RdfSubject> getSubjects() {
-        return subjects.values();
+        if (subjects != null) {
+            return subjects.values();
+        }
+        return null;
+    }
+    
+    public RdfSubject getRootElement() {
+        int count = 0;
+        RdfSubject result = null;
+        if (subjects != null) {
+            for (RdfSubject subject : subjects.values()) {
+                if (ROOT.equalsIgnoreCase(subject.getId())) {
+                    result = subject;
+                    count ++;
+                }
+                //if (subject.getParent() == null) {
+                //    result = subject;
+                //    count ++;
+                //}
+            }
+        }
+        return result;
     }
 
     @Override
@@ -175,7 +197,11 @@ public class C3TaxHandler extends DefaultHandler {
         if (subjects != null) {
             String id = RdfUtils.getAttributeValue(refElement.getAttributes(), REF_RES_TAG);
             if (id != null) {
-                return subjects.get(id);
+                RdfSubject refSubject = subjects.get(id);
+                if (refSubject == null) {
+                    //System.out.println("REFERENCE: " + id + " NOT FOUND");
+                }
+                return refSubject;
             }
         }
         return null;
