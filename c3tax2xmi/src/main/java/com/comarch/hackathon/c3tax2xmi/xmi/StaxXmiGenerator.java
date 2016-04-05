@@ -15,6 +15,7 @@ public class StaxXmiGenerator {
 
 	static String xmiNs = "http://schema.omg.org/spec/XMI/2.1";
 	static String umlNs = "http://schema.omg.org/spec/UML/2.1";
+	static String cmofNs = "http://schema.omg.org/spec/MOF/2.0/cmof.xml";
 	
 	XMLStreamWriter writer;
 	
@@ -45,11 +46,11 @@ public class StaxXmiGenerator {
 					continue;
 				}
 				
-				writeClassStart(UUID.randomUUID().toString(), subject.getTitle());
+				writeClassStart(UUID.randomUUID().toString(), subject);
 				writeProperty(UUID.randomUUID().toString(), "Title", "uml:Property");
 				writeClassEnd();
 				
-				if(++count >= 10) {
+				if(++count >= 5) {
 					break;
 				}
 			}
@@ -75,6 +76,7 @@ public class StaxXmiGenerator {
 		writer.writeStartElement("xmi", "XMI", xmiNs);
 		writer.writeNamespace("xmi", xmiNs);
 		writer.writeNamespace("uml", umlNs);
+		writer.writeNamespace("cmof", cmofNs);
 		writer.writeAttribute(xmiNs, "version", "2.1");
 
 		writer.writeStartElement(xmiNs, "Documentation");
@@ -112,13 +114,15 @@ public class StaxXmiGenerator {
 		writer.writeEndElement();
 	}
 	
-	private void writeClassStart(String id, String name) throws XMLStreamException {
+	private void writeClassStart(String id, RdfSubject subject) throws XMLStreamException {
 		//<packagedElement xmi:type="uml:Class" name="Order" xmi:id="BOUML_0x1f498_4" visibility="package" isAbstract="false" >
-		writer.writeStartElement("packagedElement");
+		writer.writeStartElement("ownedElement");
 		writer.writeAttribute(xmiNs, "type", "uml:Class");
 		writer.writeAttribute(xmiNs, "id", id);
-		writer.writeAttribute("name", name);
+		writer.writeAttribute("name", subject.getTitle());
 		writer.writeAttribute("visibility", "package");
+		
+		writeComment(UUID.randomUUID().toString(), subject.getDescription(), id);
 		
 		//writer.writeStartElement("properties");
 		//writer.writeAttribute("documentation", "Ala ma kota");
@@ -138,10 +142,29 @@ public class StaxXmiGenerator {
 		 */
 		writer.writeStartElement("ownedAttribute");
 		
-		writer.writeAttribute(xmiNs, "type", "uml:property");
+		writer.writeAttribute(xmiNs, "type", "uml:Property");
 		writer.writeAttribute(xmiNs, "id", id);
 		writer.writeAttribute("name", name);
 		writer.writeAttribute("visibility", "public");
+		
+		writer.writeEndElement();
+	}
+	
+	private void writeComment(String id, String text, String refId) throws XMLStreamException {
+/*
+ * 				<ownedComment xmi:type="cmof:Comment" xmi:id="Actions-CompleteActions-ReadExtentAction-_ownedComment.0" annotatedElement="cf26a852-b286-45a7-b1bf-4507eb30ee96">
+					<body>A read extent action is an action that retrieves the current
+						instances of a classifier.</body>
+				</ownedComment>
+ */
+		writer.writeStartElement("ownedComment");
+		writer.writeAttribute(xmiNs, "type", "cmof:Comment");
+		writer.writeAttribute(xmiNs, "id", id);
+		writer.writeAttribute("annotatedElement", refId);
+		
+		writer.writeStartElement("body");
+		writer.writeCharacters(text);
+		writer.writeEndElement();
 		
 		writer.writeEndElement();
 	}
