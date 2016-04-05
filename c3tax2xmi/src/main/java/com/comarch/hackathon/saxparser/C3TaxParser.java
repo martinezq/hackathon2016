@@ -12,6 +12,17 @@ import org.xml.sax.SAXException;
 public class C3TaxParser {
     
     private C3TaxHandler handler;
+    private boolean filterInput = true;
+    private boolean fillReferences = true;
+
+    public C3TaxParser() {
+        this(true, true);
+    }
+     
+    public C3TaxParser(boolean filterInput, boolean fillReferences) {
+        this.filterInput = filterInput;
+        this.fillReferences = fillReferences;
+    }
     
     public void parse(File file) throws SAXException, IOException, ParserConfigurationException {
         System.setProperty("jdk.xml.entityExpansionLimit", "0");
@@ -23,18 +34,21 @@ public class C3TaxParser {
         long t = System.currentTimeMillis();
         System.out.println("START PARSING");
         
-        handler = new C3TaxHandler();
+        handler = new C3TaxHandler(filterInput);
         saxParser.parse(file, handler);
         
         System.out.println("END PARSING");
         System.out.println("TIME: " + (System.currentTimeMillis() - t) + "[ms]");
-        System.out.println("TOTAL SUBJECTS: " + handler.getSubjects().size());
         
-        t = System.currentTimeMillis();
-        System.out.println("START FILLING REFERENCES");
-        handler.fillReferences();
-        System.out.println("END FILLING REFERENCES");
-        System.out.println("TIME: " + (System.currentTimeMillis() - t) + "[ms]");
+        if (fillReferences) {
+            t = System.currentTimeMillis();
+            System.out.println("START FILLING REFERENCES");
+            handler.fillReferences();
+            System.out.println("END FILLING REFERENCES");
+            System.out.println("TIME: " + (System.currentTimeMillis() - t) + "[ms]");
+        }
+        
+        System.out.println("TOTAL SUBJECTS: " + handler.getSubjects().size());
     }
     
     public Collection<RdfSubject> getParsedElements() {

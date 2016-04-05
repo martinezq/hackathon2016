@@ -9,7 +9,12 @@ import java.util.List;
  */
 public class RdfSubject extends RdfBaseObject {
     
-    private String id = null;
+    public static final String ATTR_ABOUT = "RDF:ABOUT";
+    public static final String ELEM_TYPE = "RDF:TYPE";
+    public static final String ELEM_LABEL = "RDFS:LABEL";
+    public static final String ELEM_DESCRIPTION = "PROPERTY:DESCRIPTION";
+    public static final String ELEM_UUID = "PROPERTY:UUID";
+    
     private List<RdfAttribute> attributes = new ArrayList<>();
     private List<RdfElement> elements = new ArrayList<>();
     
@@ -17,11 +22,38 @@ public class RdfSubject extends RdfBaseObject {
     private List<RdfSubject> references = new ArrayList<>();
             
     public String getId() {
-        return id;
+        return getAttributeValue(ATTR_ABOUT);
     }
-
-    public void setId(String id) {
-        this.id = id;
+    
+    public String getAbout() {
+        return getAttributeValue(ATTR_ABOUT);
+    }
+    
+    public String getUUID() {
+        return getElementValue(ELEM_UUID);
+    }
+    
+    public String getType() {
+        return getElementValue(ELEM_LABEL);
+    }
+    
+    public String getLabel() {
+        return getElementValue(ELEM_LABEL);
+    }
+    
+    public String getDescription() {
+        return getElementValue(ELEM_DESCRIPTION);
+    }
+    
+    public String getAttributeValue(String attrName) {
+        if (attributes != null && attrName != null) {
+            for (RdfAttribute attr : attributes) {
+                if (attrName.equalsIgnoreCase(attr.getName())) {
+                    return attr.getValue();
+                }
+            }
+        }
+        return null;
     }
 
     public List<RdfAttribute> getAttributes() {
@@ -32,6 +64,17 @@ public class RdfSubject extends RdfBaseObject {
         this.attributes = attributes;
     }
 
+    public String getElementValue(String elemName) {
+        if (elements != null && elemName != null) {
+            for (RdfElement elem : elements) {
+                if (elemName.equalsIgnoreCase(elem.getName())) {
+                    return elem.getValue();
+                }
+            }
+        }
+        return null;
+    }
+    
     public List<RdfElement> getElements() {
         return elements;
     }
