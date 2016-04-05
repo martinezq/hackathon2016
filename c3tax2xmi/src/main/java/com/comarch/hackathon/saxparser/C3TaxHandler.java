@@ -28,6 +28,7 @@ public class C3TaxHandler extends DefaultHandler {
     private final Map<String,RdfSubject> subjects = new LinkedHashMap<>();
     
     private boolean filterInput = false;
+    private boolean loggingEnabled = false;
 
     public C3TaxHandler(boolean filterInput) {
         this.filterInput = filterInput;
@@ -37,6 +38,7 @@ public class C3TaxHandler extends DefaultHandler {
         return subjects.values();
     }
 
+    @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 
         if (qName.equalsIgnoreCase(SUB_TAG)) {
@@ -71,6 +73,7 @@ public class C3TaxHandler extends DefaultHandler {
         }
     }
 
+    @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
         if (qName.equalsIgnoreCase(SUB_TAG)) {
             endSubjectLog();
@@ -81,6 +84,7 @@ public class C3TaxHandler extends DefaultHandler {
         }
     }
 
+    @Override
     public void characters(char ch[], int start, int length) throws SAXException {
         if (currentSubject != null) {
             if (currentElement != null) {
@@ -93,21 +97,25 @@ public class C3TaxHandler extends DefaultHandler {
     }
     
     private void endSubjectLog() {
-        if (currentSubject != null) {
-            boolean log = false;
-            if (subjects.size() % 100 == 0) {
-                log = true;
-            }
-            if (log) {
-                System.out.println("SUBJECT NR: " + subjects.size());
-                System.out.println("SUBJECT ID: " + currentSubject.getId());
+        if (loggingEnabled) {
+            if (currentSubject != null) {
+                boolean log = false;
+                if (subjects.size() % 100 == 0) {
+                    log = true;
+                }
+                if (log) {
+                    System.out.println("SUBJECT NR: " + subjects.size());
+                    System.out.println("SUBJECT ID: " + currentSubject.getId());
+                }
             }
         }
     }
     
     private void endElementLog() {
-        if (currentElement != null) {
-            // Nothing to do
+        if (loggingEnabled) {
+            if (currentElement != null) {
+                // Nothing to do
+            }
         }
     }
     
