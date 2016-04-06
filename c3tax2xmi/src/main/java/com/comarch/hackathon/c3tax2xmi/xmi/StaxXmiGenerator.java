@@ -64,21 +64,6 @@ public class StaxXmiGenerator {
 			for (RdfSubject root : roots) {
 				outputPackage(root);
 			}
-			writePackageStart(UUID.randomUUID().toString(), "C3 Taxonomy");
-			
-			for (RdfSubject subject: subjects) {
-				if (subject.getTitle() == null) {
-					continue;
-				}
-				
-				outputClass(subject);
-				
-				if (--limit <= 0) {
-					break;
-				}
-			}
-			
-			writePackageEnd();
 			
 			writeModelEnd();
 			writeHeaderEnd();
@@ -106,25 +91,20 @@ public class StaxXmiGenerator {
 		String name = subject.buildName();
 		List<RdfSubject> children = getTaxonomyChildren(subject);
 		if (!children.isEmpty()) {
-			String packageId = UUID.randomUUID().toString();
-			writePackageStart(packageId, name);
-			writeComment(UUID.randomUUID().toString(), subject.getDescription(), packageId);
+			//String packageId = UUID.randomUUID().toString();
+			String packageId = subject.getId();
+			XmiPackage.writeStart(writer, packageId, name);
+			XmiObject.writeComment(writer, UUID.randomUUID().toString(), subject.getDescription(), packageId);
 			for (RdfSubject child : children) {
 				if (--limit <= 0) {
 					break;
 				}
 				outputPackage(child);
 			}
-			writePackageEnd();
+			XmiPackage.writeEnd(writer);
 		} else {
-			outputClass(subject);
+			new XmiClass(subject).serialize(writer);
 		}
-	}
-	
-	private void outputClass(RdfSubject subject) throws XMLStreamException {
-		writeClassStart(UUID.randomUUID().toString(), subject);
-		writeProperty(UUID.randomUUID().toString(), "Title", "uml:Property");
-		writeClassEnd();
 	}
 	
 	private void writeHeaderStart() throws XMLStreamException {
@@ -163,87 +143,4 @@ public class StaxXmiGenerator {
 		writer.writeEndElement();
 	}
 	
-	private void writePackageStart(String id, String name) throws XMLStreamException {
-		//<packagedElement xmi:type="uml:Package" xmi:id="BOUML_0x81_22" name ="sample">
-		writer.writeCharacters(eol);
-		writer.writeStartElement("packagedElement");
-		writer.writeAttribute(xmiNs, "type", "uml:Package");
-		writer.writeAttribute(xmiNs, "id", id);
-		writer.writeAttribute("name", name);
-	}
-	
-	private void writePackageEnd() throws XMLStreamException {
-		writer.writeCharacters(eol);
-		writer.writeEndElement();
-	}
-	
-	private void writeClassStart(String id, RdfSubject subject) throws XMLStreamException {
-		//<packagedElement xmi:type="uml:Class" name="Order" xmi:id="BOUML_0x1f498_4" visibility="package" isAbstract="false" >
-		writer.writeStartElement("ownedElement");
-		writer.writeAttribute(xmiNs, "type", "uml:Class");
-		writer.writeAttribute(xmiNs, "id", id);
-		writer.writeAttribute("name", subject.buildName());
-		writer.writeAttribute("visibility", "package");
-		
-		writeComment(UUID.randomUUID().toString(), subject.getDescription(), id);
-		
-		//writer.writeStartElement("properties");
-		//writer.writeAttribute("documentation", "Ala ma kota");
-		
-		//writer.writeEndElement();
-	}
-	
-	private void writeClassEnd() throws XMLStreamException {
-		writer.writeEndElement();
-		writer.writeCharacters(eol);
-	}
-	
-	private void writeProperty(String id, String name, String type) throws XMLStreamException {
-		/*
-		 * 	<ownedAttribute xmi:type="uml:Property" name="Amount" xmi:id="BOUML_0x1f518_1" visibility="protected">
-				<type xmi:type="uml:Class" xmi:idref="BOUML_datatype_0"/>
-			</ownedAttribute>
-		 */
-		writer.writeStartElement("ownedAttribute");
-		
-		writer.writeAttribute(xmiNs, "type", "uml:Property");
-		writer.writeAttribute(xmiNs, "id", id);
-		writer.writeAttribute("name", name);
-		writer.writeAttribute("visibility", "public");
-		
-		writer.writeEndElement();
-	}
-	
-	private void writeComment(String id, String text, String refId) throws XMLStreamException {
-/*
- * 				<ownedComment xmi:type="cmof:Comment" xmi:id="Actions-CompleteActions-ReadExtentAction-_ownedComment.0" annotatedElement="cf26a852-b286-45a7-b1bf-4507eb30ee96">
-					<body>A read extent action is an action that retrieves the current
-						instances of a classifier.</body>
-				</ownedComment>
- */
-		writer.writeStartElement("ownedComment");
-		writer.writeAttribute(xmiNs, "type", "cmof:Comment");
-		writer.writeAttribute(xmiNs, "id", id);
-		writer.writeAttribute("annotatedElement", refId);
-		
-		writer.writeStartElement("body");
-		writer.writeCharacters(text);
-		writer.writeEndElement();
-		
-		writer.writeEndElement();
-		writer.writeCharacters(eol);
-	}
-	
-	private void writeDependency(String id, String name, String fromRefId, String toRefId) throws XMLStreamException {
-		// <packagedElement xmi:type="uml:Dependency" xmi:id="EAID_88D30676_83EA_4a1c_9A44_10FC146C0A0B" visibility="public" supplier="EAID_364D25D6_D6F9_48ee_BEA3_4293954709B9" client="EAID_29254430_1110_40dd_B1D4_90D189099EE7"/>
-		writer.writeStartElement("packagedElement");
-		
-		writer.writeAttribute(xmiNs, "type", "uml:Dependency");
-		writer.writeAttribute(xmiNs, "id", id);
-		writer.writeAttribute("supplier", fromRefId);
-		writer.writeAttribute("client", toRefId);
-		writer.writeAttribute("name", name);
-		
-		writer.writeEndElement();
-	}
 }
