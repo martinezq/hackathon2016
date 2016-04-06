@@ -30,18 +30,7 @@ public class XmiClass extends XmiSubjectObject {
 		writer.writeAttribute("name", subject.getExportName());
 		writer.writeAttribute("visibility", "package");
 		
-		writeComment(XmiGeneratorUtil.link(subject.getExportName(), subject.getAbout()));
-		writeTitledComment("Description", subject.getDescription());
-		
-		List<RdfSubject> refereces = subject.getReferecesByName("property:Is_referring_to");
-		if (refereces != null) {
-			StringBuilder sb = new StringBuilder();
-			for (RdfSubject ref : refereces) {
-				sb.append(XmiGeneratorUtil.link(ref.getLabel(), ref.getAbout()));
-				sb.append("<br>");
-			}
-			writeTitledComment("References", sb.toString());
-		}
+		writeSubjectDescription();
 	}
 	
 	@Override

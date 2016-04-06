@@ -44,8 +44,9 @@ public class RdfDownloader {
 			
 			System.out.println("Writting file to " + file.getAbsolutePath() + ".xml");
 			
-			FileOutputStream fos = new FileOutputStream(file);
-			fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+			try (FileOutputStream fos = new FileOutputStream(file)) {
+				fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+			}
 			
 			return file;
 		} catch (Exception e) {

@@ -5,7 +5,6 @@ import com.comarch.hackathon.c3tax2xmi.model.RdfElement;
 import com.comarch.hackathon.c3tax2xmi.model.RdfSubject;
 import com.comarch.hackathon.c3tax2xmi.util.RdfUtils;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
