@@ -227,4 +227,16 @@ public class StaxXmiGenerator {
 		writer.writeCharacters(eol);
 	}
 	
+	private void writeDependency(String id, String name, String fromRefId, String toRefId) throws XMLStreamException {
+		// <packagedElement xmi:type="uml:Dependency" xmi:id="EAID_88D30676_83EA_4a1c_9A44_10FC146C0A0B" visibility="public" supplier="EAID_364D25D6_D6F9_48ee_BEA3_4293954709B9" client="EAID_29254430_1110_40dd_B1D4_90D189099EE7"/>
+		writer.writeStartElement("packagedElement");
+		
+		writer.writeAttribute(xmiNs, "type", "uml:Dependency");
+		writer.writeAttribute(xmiNs, "id", id);
+		writer.writeAttribute("supplier", fromRefId);
+		writer.writeAttribute("client", toRefId);
+		writer.writeAttribute("name", name);
+		
+		writer.writeEndElement();
+	}
 }

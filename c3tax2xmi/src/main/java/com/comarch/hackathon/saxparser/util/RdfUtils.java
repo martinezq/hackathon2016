@@ -1,10 +1,13 @@
 package com.comarch.hackathon.saxparser.util;
 
-import com.comarch.hackathon.saxparser.model.RdfAttribute;
-import com.comarch.hackathon.saxparser.model.RdfElement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
+
+import com.comarch.hackathon.saxparser.model.RdfAttribute;
+import com.comarch.hackathon.saxparser.model.RdfElement;
+import com.comarch.hackathon.saxparser.model.RdfSubject;
 
 /**
  *
@@ -57,5 +60,17 @@ public class RdfUtils {
             }
         }
         return null;
+    }
+    
+    public static Set<String> findUniqueElementNames(Collection<RdfSubject> subjects) {
+    	Set<String> result = new HashSet<String>();
+    	
+    	for(RdfSubject subject: subjects) {
+    		for(RdfElement element: subject.getElements()) {
+    			result.add(element.getName());
+    		}
+    	}
+    	
+    	return result;
     }
 }
