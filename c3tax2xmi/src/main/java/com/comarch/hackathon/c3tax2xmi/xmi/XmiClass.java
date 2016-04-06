@@ -5,13 +5,10 @@ import javax.xml.stream.XMLStreamWriter;
 
 import com.comarch.hackathon.c3tax2xmi.model.RdfSubject;
 
-public class XmiClass extends XmiObject {
-	
-	private RdfSubject subject;
+public class XmiClass extends XmiSubjectObject {
 	
 	public XmiClass(XMLStreamWriter writer, RdfSubject subject) {
-		super(writer);
-		this.subject = subject;
+		super(writer, subject);
 	}
 
 	@Override
@@ -21,7 +18,7 @@ public class XmiClass extends XmiObject {
 		writeEnd();
 	}
 	
-	private void writeStart() throws XMLStreamException {
+	public void writeStart() throws XMLStreamException {
 		//<packagedElement xmi:type="uml:Class" name="Order" xmi:id="BOUML_0x1f498_4" visibility="package" isAbstract="false" >
 		writer.writeStartElement("ownedElement");
 		writer.writeAttribute(xmiNs, "type", "uml:Class");
@@ -29,17 +26,10 @@ public class XmiClass extends XmiObject {
 		writer.writeAttribute("name", subject.getExportName());
 		writer.writeAttribute("visibility", "package");
 		
-		writeComment(subject.getDescription(), subject.getExportId());
-		
-		//writer.writeStartElement("properties");
-		//writer.writeAttribute("documentation", "Ala ma kota");
-		
-		//writer.writeEndElement();
+		writeComment(subject.getDescription());
 	}
 
-	private void writeEnd() throws XMLStreamException {
-		writer.writeEndElement();
-		writer.writeCharacters(eol);
-	}
+
+
 
 }

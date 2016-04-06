@@ -5,13 +5,10 @@ import javax.xml.stream.XMLStreamWriter;
 
 import com.comarch.hackathon.c3tax2xmi.model.RdfSubject;
 
-public class XmiPackage extends XmiObject {
-	
-	private RdfSubject subject;
+public class XmiPackage extends XmiSubjectObject {
 	
 	public XmiPackage(XMLStreamWriter writer, RdfSubject subject) {
-		super(writer);
-		this.subject = subject;
+		super(writer, subject);
 	}
 
 	@Override
@@ -28,12 +25,8 @@ public class XmiPackage extends XmiObject {
 		writer.writeAttribute(xmiNs, "id", subject.getExportId());
 		writer.writeAttribute("name", subject.getExportName());
 		
-		writeComment(subject.getDescription(), subject.getExportId());
+		writeComment(subject.getDescription());
 	}	
 
-	public void writeEnd() throws XMLStreamException {
-		writer.writeCharacters(eol);
-		writer.writeEndElement();
-	}
 
 }
