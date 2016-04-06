@@ -16,14 +16,10 @@ import org.xml.sax.helpers.DefaultHandler;
 
 public class C3TaxHandler extends DefaultHandler {
 
+    private final boolean loggingEnabled = false;
     public static final String ROOT = "http://192.168.1.25/em/index.php/Special:URIResolver/C3_Taxonomy";
     public static final String SUBJECT_ELEM_TAG = "SWIVT:SUBJECT";
     public static final String REFERENCE_RESOURCE_ATTR_TAG = "RDF:RESOURCE";
-    
-    public static final List<String> DISABLED_INPUT_TYPES = null;
-    public static final List<String> DISABLED_INPUT_ATTRIBUTES = null;
-    public static final List<String> DISABLED_INPUT_ELEMENTS = Arrays.asList(
-            new String[]{"PROPERTY:HAS_QUERY"});
     
     private RdfSubject currentSubject = null;
     private RdfElement currentElement = null;
@@ -31,7 +27,7 @@ public class C3TaxHandler extends DefaultHandler {
     private final Map<String,RdfSubject> subjects = new LinkedHashMap<>();
     
     private boolean filterInput = false;
-    private boolean loggingEnabled = false;
+    private final C3TaxFilter filter = new C3TaxFilter();
 
     public C3TaxHandler(boolean filterInput) {
         this.filterInput = filterInput;
@@ -74,24 +70,16 @@ public class C3TaxHandler extends DefaultHandler {
             if (attrs != null) {
                 currentSubject.getAttributes().addAll(attrs);
             }
-            
-            if (currentSubject.getId() != null) {
-                subjects.put(currentSubject.getId(), currentSubject);
-            }
         } else {
-            // Add elements to subject
+            // Create element for subject
             if (currentSubject != null) {
-                if (filterInputElement(qName)) {
-                    currentElement = new RdfElement();
-                    currentElement.setName(qName);
-                    currentElement.setValue(null);
+                currentElement = new RdfElement();
+                currentElement.setName(qName);
+                currentElement.setValue(null);
 
-                    List<RdfAttribute> attrs = handleAttributes(attributes);
-                    if (attrs != null) {
-                        currentElement.getAttributes().addAll(attrs);
-                    }
-
-                    currentSubject.getElements().add(currentElement);
+                List<RdfAttribute> attrs = handleAttributes(attributes);
+                if (attrs != null) {
+                    currentElement.getAttributes().addAll(attrs);
                 }
             }
         }
@@ -101,9 +89,27 @@ public class C3TaxHandler extends DefaultHandler {
     public void endElement(String uri, String localName, String qName) throws SAXException {
         if (qName.equalsIgnoreCase(SUBJECT_ELEM_TAG)) {
             endSubjectLog();
+            if (currentSubject != null && currentSubject.getId() != null) {
+                if (filterInput) {
+                    if (filter.filterInputSubject(currentSubject)) {
+                        subjects.put(currentSubject.getId(), currentSubject);
+                    }
+                } else {
+                    subjects.put(currentSubject.getId(), currentSubject);
+                }
+            }
             currentSubject = null;
         } else {
             endElementLog();
+            if (currentSubject != null) {
+                if (filterInput) {
+                    if (filter.filterInputElement(currentElement)) {
+                        currentSubject.getElements().add(currentElement);
+                    }
+                } else {
+                    currentSubject.getElements().add(currentElement);
+                }
+            }
             currentElement = null;
         }
     }
@@ -147,34 +153,20 @@ public class C3TaxHandler extends DefaultHandler {
         List<RdfAttribute> result = new ArrayList<>();
         if (attributes != null) {
             for (int i = 0; i < attributes.getLength(); i++) {
-                if (filterInputAttribute(attributes.getQName(i))) {
-                    RdfAttribute attr = new RdfAttribute();
-                    attr.setName(attributes.getQName(i));
-                    attr.setValue(attributes.getValue(i));
+                RdfAttribute attr = new RdfAttribute();
+                attr.setName(attributes.getQName(i));
+                attr.setValue(attributes.getValue(i));
 
-                    result.add(attr);
+                if (filterInput) {
+                    if (filter.filterInputAttribute(attr)) {
+                        result.add(attr);
+                    }
+                } else {
+                   result.add(attr);
                 }
             }
         }
         return result;
-    }
-    
-    private boolean filterInputAttribute(String attributeName) {
-        if (filterInput && DISABLED_INPUT_ATTRIBUTES != null && attributeName != null) {
-            if (DISABLED_INPUT_ATTRIBUTES.contains(attributeName.toUpperCase())) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
-    private boolean filterInputElement(String elementName) {
-        if (filterInput && DISABLED_INPUT_ELEMENTS != null && elementName != null) {
-            if (DISABLED_INPUT_ELEMENTS.contains(elementName.toUpperCase())) {
-                return false;
-            }
-        }
-        return true;
     }
     
     public void fillReferences() {

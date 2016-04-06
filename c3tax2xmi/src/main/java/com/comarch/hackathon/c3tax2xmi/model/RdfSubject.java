@@ -60,7 +60,7 @@ public class RdfSubject extends RdfBaseObject {
         		}
         	}
         }
-        return null;
+        return types;
     }
     
     public String getLabel() {
