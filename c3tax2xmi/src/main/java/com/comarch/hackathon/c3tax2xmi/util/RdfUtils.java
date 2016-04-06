@@ -2,7 +2,9 @@ package com.comarch.hackathon.c3tax2xmi.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import com.comarch.hackathon.c3tax2xmi.model.RdfAttribute;
@@ -80,6 +82,18 @@ public class RdfUtils {
     	for(RdfSubject subject: subjects) {
     		for(RdfElement element: subject.getElements()) {
     			result.add(element.getName());
+    		}
+    	}
+    	
+    	return result;
+    }
+    
+    public static Map<String, String> findUniqueElementNamesAndDataTypes(Collection<RdfSubject> subjects) {
+    	Map<String, String> result = new HashMap<String, String>();
+    	
+    	for(RdfSubject subject: subjects) {
+    		for(RdfElement element: subject.getElements()) {
+    			result.put(element.getName(), element.getDatatype());
     		}
     	}
     	

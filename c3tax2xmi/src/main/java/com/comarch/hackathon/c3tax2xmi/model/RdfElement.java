@@ -23,6 +23,15 @@ public class RdfElement extends RdfBaseObject {
     public RdfAttribute getAttribute(String attrName) {
     	return RdfUtils.getAttribute(attributes, attrName);
     }
-    
+
+    public String getDatatype() {
+    	for(RdfAttribute attr: attributes) {
+    		if(attr.getName().equalsIgnoreCase("rdf:datatype")) {
+    			return attr.getValue();
+    		}
+    	}
+    	
+    	return null;
+    }
     
 }
