@@ -26,6 +26,7 @@ public class XmiModel extends XmiObject {
 	@Override
 	public void writeEnd() throws XMLStreamException {
 		writer.writeEndElement();
+		writeEol();
 	}
 
 }

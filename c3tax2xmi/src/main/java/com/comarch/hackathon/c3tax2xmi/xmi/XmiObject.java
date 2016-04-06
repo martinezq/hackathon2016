@@ -22,6 +22,15 @@ public abstract class XmiObject {
 	public abstract void writeStart() throws XMLStreamException;
 	public abstract void writeEnd() throws XMLStreamException;
 	
+	public void extensionStart() throws XMLStreamException {
+		writer.writeStartElement("element");
+	}
+	
+	public void extensionEnd() throws XMLStreamException {
+		writer.writeEndElement();
+		writeEol();
+	}
+	
 	public void writeEol() throws XMLStreamException {
 		writer.writeCharacters(eol);
 	}

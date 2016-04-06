@@ -19,7 +19,6 @@ public class XmiPackage extends XmiSubjectObject {
 	
 	public void writeStart() throws XMLStreamException {
 		//<packagedElement xmi:type="uml:Package" xmi:id="BOUML_0x81_22" name ="sample">
-		writer.writeCharacters(eol);
 		writer.writeStartElement("packagedElement");
 		writer.writeAttribute(xmiNs, "type", "uml:Package");
 		writer.writeAttribute(xmiNs, "id", subject.getExportId());

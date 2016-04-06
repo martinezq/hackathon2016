@@ -20,10 +20,10 @@ public class XmiFile extends XmiObject {
 		
 		writer.writeCharacters(eol);
 		writer.writeStartElement("xmi", "XMI", xmiNs);
-		writer.writeNamespace("xmi", xmiNs);
-		writer.writeNamespace("uml", umlNs);
-		writer.writeNamespace("cmof", cmofNs);
 		writer.writeAttribute(xmiNs, "version", "2.1");
+		writer.writeNamespace("uml", umlNs);
+		writer.writeNamespace("xmi", xmiNs);
+		writer.writeNamespace("cmof", cmofNs);
 
 		writer.writeCharacters(eol);
 		writer.writeStartElement(xmiNs, "Documentation");

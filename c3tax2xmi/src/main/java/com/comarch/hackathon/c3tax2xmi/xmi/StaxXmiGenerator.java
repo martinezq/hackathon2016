@@ -13,7 +13,7 @@ import com.comarch.hackathon.c3tax2xmi.model.RdfSubject;
 
 public class StaxXmiGenerator {
 	
-	public static int OBJECT_LIMIT = 10000;
+	public static int OBJECT_LIMIT = 1000;
 
 	private int limit;
 	private int countPackages;
@@ -22,6 +22,7 @@ public class StaxXmiGenerator {
 	XMLStreamWriter writer;
 	
 	Collection<RdfSubject> subjects;
+	Collection<XmiObject> objects;
 	
 	public static String[] LEGAL_TYPES = {
 			"/Category-3ATaxonomy_Nodes", 
@@ -64,6 +65,7 @@ public class StaxXmiGenerator {
 			countPackages = countClasses = 0;
 			
 			List<RdfSubject> roots = findRoots();
+			objects = new ArrayList<>();
 			
 			System.out.println("Generating objects...");
 			for (RdfSubject root : roots) {
@@ -71,12 +73,22 @@ public class StaxXmiGenerator {
 			}
 			
 			xmiModel.writeEnd();
+			
+			XmiExtension xmiExtension = new XmiExtension(writer);
+			xmiExtension.writeStart();
+			for (XmiObject obj : objects) {
+				obj.extensionStart();
+				obj.extensionEnd();
+			}
+			xmiExtension.writeEnd();
+			
 			xmiFile.writeEnd();
 
 			writer.flush();
 			writer.close();
 			System.out.println("Generated packages: " + countPackages);
 			System.out.println("Generated classes: " + countClasses);
+			System.out.println("Finished. Total objects: " + objects.size());
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -96,6 +108,7 @@ public class StaxXmiGenerator {
 		List<RdfSubject> children = getTaxonomyChildren(subject);
 		if (!children.isEmpty()) {
 			XmiPackage xmiPackage = new XmiPackage(writer, subject);
+			objects.add(xmiPackage);
 			xmiPackage.writeStart();
 			for (RdfSubject child : children) {
 				if (--limit <= 0) {
@@ -106,7 +119,9 @@ public class StaxXmiGenerator {
 			}
 			xmiPackage.writeEnd();
 		} else {
-			new XmiClass(writer, subject).serialize();
+			XmiClass xmiClass = new XmiClass(writer, subject);
+			xmiClass.serialize();
+			objects.add(xmiClass);
 			countClasses++;
 		}
 	}

@@ -5,6 +5,7 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import com.comarch.hackathon.c3tax2xmi.model.RdfElement;
 import com.comarch.hackathon.c3tax2xmi.model.RdfSubject;
 
 public abstract class XmiSubjectObject extends XmiObject {
@@ -57,11 +58,28 @@ public abstract class XmiSubjectObject extends XmiObject {
 		}
 	}
 	
+	@Override
 	public abstract void writeStart() throws XMLStreamException;
 	
+	@Override
 	public void writeEnd() throws XMLStreamException {
 		writer.writeEndElement();
 		writer.writeCharacters(eol);
+	}
+	
+	@Override
+	public void extensionStart() throws XMLStreamException {
+		super.extensionStart();
+		writer.writeAttribute(xmiNs, "idref", subject.getExportId());
+		writer.writeAttribute(xmiNs, "type", "uml:Package");
+		RdfElement modDate = subject.getFirstElement("swivt:wikiPageModificationDate");
+		if (modDate != null && modDate.getValue() != null) {
+			writeEol();
+			writer.writeStartElement("times");
+			writer.writeAttribute("created", modDate.getValue());
+			writer.writeAttribute("modified", modDate.getValue());
+			writer.writeEndElement();
+		}
 	}
 	
 	public void writeDependencyFrom(String name, RdfSubject fromSubject) throws XMLStreamException {
