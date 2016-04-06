@@ -2,8 +2,10 @@ package com.comarch.hackathon.c3tax2xmi.xmi;
 
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -18,6 +20,12 @@ public class StaxXmiGenerator {
 	XMLStreamWriter writer;
 	
 	Collection<RdfSubject> subjects;
+	
+	public static String[] LEGAL_TYPES = {
+			"/Category-3ATaxonomy_Nodes", 
+			"/Category-3AServices", 
+			"/Category-3AApplications"
+		};
 
 	public StaxXmiGenerator(Collection<RdfSubject> subjects) {
 		this.subjects = subjects;
@@ -73,9 +81,7 @@ public class StaxXmiGenerator {
 	private List<RdfSubject> getTaxonomyChildren(RdfSubject subject) {
 		List<RdfSubject> taxonomy = new ArrayList<>();
 		for (RdfSubject child : subject.getChildren()) {
-			if (child.hasType("/Category-3ATaxonomy_Nodes")
-					|| child.hasType("/Category-3AServices")
-					|| child.hasType("/Category-3AApplications")) {
+			if (XmiSubjectObject.shouldWrite(child)) {
 				taxonomy.add(child);
 			}
 		}

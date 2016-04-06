@@ -42,4 +42,12 @@ public abstract class XmiSubjectObject extends XmiObject {
 	public void writeDependencyTo(String name, RdfSubject toSubject) throws XMLStreamException {
 		writeDependency(name, toSubject.getExportId(), subject.getExportId());
 	}
+	
+	public boolean shouldWrite() {
+		return shouldWrite(subject);
+	}
+	
+	public static boolean shouldWrite(RdfSubject subject) {
+		return subject.hasAnyType(StaxXmiGenerator.LEGAL_TYPES);
+	}
 }

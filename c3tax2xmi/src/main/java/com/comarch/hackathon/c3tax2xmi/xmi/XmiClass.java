@@ -57,7 +57,9 @@ public class XmiClass extends XmiSubjectObject {
 			List<RdfSubject> list = subject.getReferecesByName(refName);
 			String refDisplayName = refName.split(":")[1].replaceAll("_", " ");
 			for(RdfSubject refSubject: list) {
-				writeDependencyTo(refDisplayName, refSubject);
+				if(shouldWrite(refSubject)) {
+					writeDependencyTo(refDisplayName, refSubject);
+				}
 			}
 		}
 
