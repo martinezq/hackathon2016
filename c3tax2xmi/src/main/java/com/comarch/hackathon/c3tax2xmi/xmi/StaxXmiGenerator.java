@@ -12,8 +12,12 @@ import javax.xml.stream.XMLStreamWriter;
 import com.comarch.hackathon.c3tax2xmi.model.RdfSubject;
 
 public class StaxXmiGenerator {
+	
+	public static int OBJECT_LIMIT = 10000;
 
 	private int limit;
+	private int countPackages;
+	private int countClasses;
 	
 	XMLStreamWriter writer;
 	
@@ -22,7 +26,10 @@ public class StaxXmiGenerator {
 	public static String[] LEGAL_TYPES = {
 			"/Category-3ATaxonomy_Nodes", 
 			"/Category-3AServices", 
-			"/Category-3AApplications"
+			"/Category-3AApplications",
+			"/Category-3ABusiness_Processes",
+			"/Category-3AEquipment",
+			"/Category-3AInformation_Products"
 		};
 
 	public StaxXmiGenerator(Collection<RdfSubject> subjects) {
@@ -32,10 +39,6 @@ public class StaxXmiGenerator {
 	private List<RdfSubject> findRoots() {
 		List<RdfSubject> roots = new ArrayList<>();
 		for (RdfSubject subject : subjects) {
-			/*if (subject.getParent() == null) {
-				System.out.println("parentless " + subject.getId());
-				roots.add(subject);
-			}*/
 			if ("C3 Taxonomy".equals(subject.getLabel())) {
 				System.out.println("Root " + subject.getId());
 				roots.add(subject);
@@ -57,10 +60,12 @@ public class StaxXmiGenerator {
 			XmiModel xmiModel = new XmiModel(writer);
 			xmiModel.writeStart();
 			
-			limit = 1000;
+			limit = OBJECT_LIMIT;
+			countPackages = countClasses = 0;
 			
 			List<RdfSubject> roots = findRoots();
 			
+			System.out.println("Generating objects...");
 			for (RdfSubject root : roots) {
 				outputPackage(root);
 			}
@@ -70,7 +75,8 @@ public class StaxXmiGenerator {
 
 			writer.flush();
 			writer.close();
-
+			System.out.println("Generated packages: " + countPackages);
+			System.out.println("Generated classes: " + countClasses);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -96,10 +102,12 @@ public class StaxXmiGenerator {
 					break;
 				}
 				outputPackage(child);
+				countPackages++;
 			}
 			xmiPackage.writeEnd();
 		} else {
 			new XmiClass(writer, subject).serialize();
+			countClasses++;
 		}
 	}
 	

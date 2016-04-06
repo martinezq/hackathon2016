@@ -21,13 +21,15 @@ public abstract class XmiSubjectObject extends XmiObject {
 	}
 	
 	protected void writeTitledComment(String title, String text) throws XMLStreamException {
-		StringBuilder sb = new StringBuilder(text.length());
-		sb.append("<b>");
-		sb.append(title);
-		sb.append("</b><br>");
-		sb.append(text);
-		sb.append("<p>");
-		writeComment(sb.toString());
+		if (text != null) {
+			StringBuilder sb = new StringBuilder(text.length());
+			sb.append("<b>");
+			sb.append(title);
+			sb.append("</b><br>");
+			sb.append(text);
+			sb.append("<p>");
+			writeComment(sb.toString());
+		}
 	}
 	
 	protected void writeSubjectDescription() throws XMLStreamException {
@@ -42,6 +44,16 @@ public abstract class XmiSubjectObject extends XmiObject {
 				sb.append("<br>");
 			}
 			writeTitledComment("References", sb.toString());
+		}
+		
+		refereces = subject.getChildren();
+		if (refereces != null && !refereces.isEmpty()) {
+			StringBuilder sb = new StringBuilder();
+			for (RdfSubject ref : refereces) {
+				sb.append(XmiGeneratorUtil.link(ref.getLabel(), ref.getAbout()));
+				sb.append("<br>");
+			}
+			writeTitledComment("Children", sb.toString());
 		}
 	}
 	
