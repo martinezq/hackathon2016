@@ -2,6 +2,7 @@ package com.comarch.hackathon.c3tax2xmi.xmi;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -100,5 +101,20 @@ public abstract class XmiSubjectObject extends XmiObject {
 	
 	public static boolean shouldWrite(RdfSubject subject) {
 		return subject.hasAnyType(StaxXmiGenerator.LEGAL_TYPES);
+	}
+	
+	protected void writeDependencies() throws XMLStreamException {
+		Set<String> referenceNames = subject.getAllReferencesNames();
+		
+		for(String refName: referenceNames) {
+			List<RdfSubject> list = subject.getReferecesByName(refName);
+			String refDisplayName = refName.split(":")[1].replaceAll("_", " ");
+			for(RdfSubject refSubject: list) {
+				if(shouldWrite(refSubject)) {
+					writeDependencyTo(refDisplayName, refSubject);
+				}
+			}
+		}
+
 	}
 }

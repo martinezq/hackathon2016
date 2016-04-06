@@ -39,19 +39,4 @@ public class XmiClass extends XmiSubjectObject {
 		writeDependencies();
 	}
 
-	private void writeDependencies() throws XMLStreamException {
-		Set<String> referenceNames = subject.getAllReferencesNames();
-		
-		for(String refName: referenceNames) {
-			List<RdfSubject> list = subject.getReferecesByName(refName);
-			String refDisplayName = refName.split(":")[1].replaceAll("_", " ");
-			for(RdfSubject refSubject: list) {
-				if(shouldWrite(refSubject)) {
-					writeDependencyTo(refDisplayName, refSubject);
-				}
-			}
-		}
-
-	}
-
 }

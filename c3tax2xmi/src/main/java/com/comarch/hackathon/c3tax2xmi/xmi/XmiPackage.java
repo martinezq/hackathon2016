@@ -27,4 +27,9 @@ public class XmiPackage extends XmiSubjectObject {
 		writeSubjectDescription();
 	}	
 
+	@Override
+	public void writeEnd() throws XMLStreamException {
+		super.writeEnd();
+		writeDependencies();
+	}
 }
