@@ -15,6 +15,7 @@ import com.comarch.hackathon.saxparser.util.RdfUtils;
 public class RdfSubject extends RdfBaseObject {
     
     public static final String ATTR_ABOUT = "RDF:ABOUT";
+    public static final String ATTR_RESOURCE = "rdf:resource";
     public static final String ELEM_UUID = "PROPERTY:UUID";
     public static final String ELEM_TYPE = "RDF:TYPE";
     public static final String ELEM_LABEL = "RDFS:LABEL";
@@ -43,7 +44,11 @@ public class RdfSubject extends RdfBaseObject {
     }
     
     public String getType() {
-        return getElementValue(ELEM_LABEL);
+        RdfElement element = RdfUtils.getElement(elements, ELEM_TYPE);
+        if (element != null) {
+        	return RdfUtils.getAttributeValue(element.getAttributes(), ATTR_RESOURCE);
+        }
+        return null;
     }
     
     public String getLabel() {
@@ -56,6 +61,17 @@ public class RdfSubject extends RdfBaseObject {
     
     public String getTitle() {
         return getElementValue(ELEM_TITLE);
+    }
+    
+    public String buildName() {
+    	String name = getTitle();
+    	if (name == null) {
+    		name = getLabel();
+    	}
+    	if (name == null) {
+    		name = getName();
+    	}
+    	return name;
     }
     
     public String getAttributeValue(String attrName) {
@@ -94,7 +110,7 @@ public class RdfSubject extends RdfBaseObject {
         this.parent = parent;
     }
 
-    public List<RdfSubject> getChilds() {
+    public List<RdfSubject> getChildren() {
         return childs;
     }
 

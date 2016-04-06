@@ -18,6 +18,7 @@ public class StaxXmiGenerator {
 	private static final String umlNs = "http://schema.omg.org/spec/UML/2.1";
 	private static final String cmofNs = "http://schema.omg.org/spec/MOF/2.0/cmof.xml";
 	private static final String eol = "\n";
+	private int limit;
 	
 	XMLStreamWriter writer;
 	
@@ -56,7 +57,7 @@ public class StaxXmiGenerator {
 			writeModelStart();
 			writer.writeCharacters(eol);
 			
-			int count = 0;
+			limit = 100;
 			
 			List<RdfSubject> roots = findRoots();
 			
@@ -72,12 +73,10 @@ public class StaxXmiGenerator {
 				
 				outputClass(subject);
 				
-				if (++count >= 5) {
+				if (--limit <= 0) {
 					break;
 				}
 			}
-			
-			System.out.println("Count = " + count);
 			
 			writePackageEnd();
 			
@@ -92,26 +91,34 @@ public class StaxXmiGenerator {
 		}
 	}
 	
+	private List<RdfSubject> getTaxonomyChildren(RdfSubject subject) {
+		List<RdfSubject> taxonomy = new ArrayList<>();
+		for (RdfSubject child : subject.getChildren()) {
+			String type = child.getType();
+			if ("http://192.168.1.25/em/index.php/Special:URIResolver/Category-3ATaxonomy_Nodes".equals(type)) {
+				taxonomy.add(child);
+			}
+		}
+		return taxonomy;
+	}
+	
 	private void outputPackage(RdfSubject subject) throws XMLStreamException {
-		String title = subject.getTitle();
-		if (title == null) {
-			title = subject.getLabel();
-		}
-		if (title == null) {
-			title = "??";
-		}
-		writePackageStart(UUID.randomUUID().toString(), title);
-		List<RdfSubject> children = subject.getChilds();
+		String name = subject.buildName();
+		List<RdfSubject> children = getTaxonomyChildren(subject);
 		if (!children.isEmpty()) {
+			String packageId = UUID.randomUUID().toString();
+			writePackageStart(packageId, name);
+			writeComment(UUID.randomUUID().toString(), subject.getDescription(), packageId);
 			for (RdfSubject child : children) {
+				if (--limit <= 0) {
+					break;
+				}
 				outputPackage(child);
 			}
+			writePackageEnd();
 		} else {
-			if (subject.getTitle() != null) {
-				outputClass(subject);
-			}
+			outputClass(subject);
 		}
-		writePackageEnd();
 	}
 	
 	private void outputClass(RdfSubject subject) throws XMLStreamException {
@@ -175,7 +182,7 @@ public class StaxXmiGenerator {
 		writer.writeStartElement("ownedElement");
 		writer.writeAttribute(xmiNs, "type", "uml:Class");
 		writer.writeAttribute(xmiNs, "id", id);
-		writer.writeAttribute("name", subject.getTitle());
+		writer.writeAttribute("name", subject.buildName());
 		writer.writeAttribute("visibility", "package");
 		
 		writeComment(UUID.randomUUID().toString(), subject.getDescription(), id);

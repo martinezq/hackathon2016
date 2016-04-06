@@ -176,7 +176,7 @@ public class C3TaxHandler extends DefaultHandler {
                     RdfSubject parent = findReference(childOfElement);
                     if (parent != null) {
                         subject.setParent(parent);
-                        parent.getChilds().add(subject);
+                        parent.getChildren().add(subject);
                     }
                 }
                 
