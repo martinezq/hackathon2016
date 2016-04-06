@@ -1,4 +1,4 @@
-package com.comarch.hackathon.saxparser.model;
+package com.comarch.hackathon.c3tax2xmi.model;
 
 /**
  *

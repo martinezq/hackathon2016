@@ -1,6 +1,6 @@
-package com.comarch.hackathon.saxparser;
+package com.comarch.hackathon.c3tax2xmi.saxparser;
 
-import com.comarch.hackathon.saxparser.model.RdfSubject;
+import com.comarch.hackathon.c3tax2xmi.model.RdfSubject;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;

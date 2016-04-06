@@ -9,8 +9,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
-import com.comarch.hackathon.saxparser.C3TaxParser;
-import com.comarch.hackathon.saxparser.util.RdfUtils;
+import com.comarch.hackathon.c3tax2xmi.util.RdfUtils;
 
 public class ListUniqueElementNames {
 

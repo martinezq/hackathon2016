@@ -1,7 +1,7 @@
 package com.comarch.hackathon.c3tax2xmi;
 
 import com.comarch.hackathon.c3tax2xmi.xmi.StaxXmiGenerator;
-import com.comarch.hackathon.saxparser.C3TaxParser;
+import com.comarch.hackathon.c3tax2xmi.saxparser.C3TaxParser;
 import java.io.File;
 
 public class Main {

@@ -8,7 +8,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
-import com.comarch.hackathon.saxparser.C3TaxParser;
+import com.comarch.hackathon.c3tax2xmi.saxparser.C3TaxParser;
 
 public class StaxXmiGeneratorTest {
 

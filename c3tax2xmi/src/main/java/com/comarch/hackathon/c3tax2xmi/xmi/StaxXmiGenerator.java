@@ -10,7 +10,7 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import com.comarch.hackathon.saxparser.model.RdfSubject;
+import com.comarch.hackathon.c3tax2xmi.model.RdfSubject;
 
 public class StaxXmiGenerator {
 

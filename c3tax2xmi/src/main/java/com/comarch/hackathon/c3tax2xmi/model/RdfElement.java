@@ -1,9 +1,9 @@
-package com.comarch.hackathon.saxparser.model;
+package com.comarch.hackathon.c3tax2xmi.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.comarch.hackathon.saxparser.util.RdfUtils;
+import com.comarch.hackathon.c3tax2xmi.util.RdfUtils;
 
 /**
  *
