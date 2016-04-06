@@ -7,7 +7,7 @@ import java.io.File;
 public class Main {
 
 	public static void main(String[] args) {
-		System.out.println("hello Hackathon");
+		System.out.println("Hello Hackathon");
 		boolean genXmi = false;
 		boolean loadRdf = false;
 		String rdf = null;
@@ -51,8 +51,10 @@ public class Main {
 				C3TaxParser parser = new C3TaxParser();
 				parser.parse(file);
 				//parser.getParsedElements();
-				StaxXmiGenerator generator = new StaxXmiGenerator(parser.getParsedElements());
-				generator.write(xmi);				
+				if (genXmi) {
+					StaxXmiGenerator generator = new StaxXmiGenerator(parser.getParsedElements());
+					generator.write(xmi);
+				}
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
