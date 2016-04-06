@@ -1,5 +1,6 @@
 package com.comarch.hackathon.c3tax2xmi.xmi;
 
+import java.util.Collection;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
@@ -56,6 +57,9 @@ public abstract class XmiSubjectObject extends XmiObject {
 			}
 			writeTitledComment("Children", sb.toString());
 		}
+
+		String subObjectsDescription = XmiGeneratorUtil.subObjectsDescription(subject);
+		writeComment(subObjectsDescription);
 	}
 	
 	@Override
