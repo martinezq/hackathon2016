@@ -1,5 +1,8 @@
 package com.comarch.hackathon.c3tax2xmi.xmi;
 
+import java.util.List;
+import java.util.Set;
+
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
@@ -28,6 +31,25 @@ public class XmiClass extends XmiSubjectObject {
 		
 		writeComment(subject.getDescription());
 		writeComment(XmiGeneratorUtil.link(subject.getExportName(), subject.getAbout()));
+	}
+	
+	@Override
+	public void writeEnd() throws XMLStreamException {
+		super.writeEnd();
+		writeDependencies();
+	}
+
+	private void writeDependencies() throws XMLStreamException {
+		Set<String> referenceNames = subject.getAllReferencesNames();
+		
+		for(String refName: referenceNames) {
+			List<RdfSubject> list = subject.getReferecesByName(refName);
+			String refDisplayName = refName.split(":")[1].replaceAll("_", " ");
+			for(RdfSubject refSubject: list) {
+				writeDependencyTo(refDisplayName, refSubject);
+			}
+		}
+
 	}
 
 }

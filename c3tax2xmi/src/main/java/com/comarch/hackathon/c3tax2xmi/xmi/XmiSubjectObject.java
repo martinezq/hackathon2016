@@ -24,4 +24,12 @@ public abstract class XmiSubjectObject extends XmiObject {
 		writer.writeEndElement();
 		writer.writeCharacters(eol);
 	}
+	
+	public void writeDependencyFrom(String name, RdfSubject fromSubject) throws XMLStreamException {
+		writeDependency(name, subject.getExportId(), fromSubject.getExportId());
+	}
+	
+	public void writeDependencyTo(String name, RdfSubject toSubject) throws XMLStreamException {
+		writeDependency(name, toSubject.getExportId(), subject.getExportId());
+	}
 }

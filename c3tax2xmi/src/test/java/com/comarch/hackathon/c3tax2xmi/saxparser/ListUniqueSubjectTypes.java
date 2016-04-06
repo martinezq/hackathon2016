@@ -22,7 +22,8 @@ public class ListUniqueSubjectTypes {
 			Set<String> result = RdfUtils.findUniqueRdfTypes(parser.getParsedElements());
 			
 			for(String val: result) {
-				System.out.println(val);
+				String label = val.split("/")[6].replaceAll("Category-3A", "");
+				System.out.println("public static String " + label + " = \"" + val + "\";");
 			}
 		} catch (SAXException | IOException | ParserConfigurationException e) {
 			throw new RuntimeException(e);

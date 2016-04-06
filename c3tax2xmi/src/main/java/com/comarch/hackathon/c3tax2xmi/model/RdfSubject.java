@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.comarch.hackathon.c3tax2xmi.util.RdfUtils;
 
@@ -174,4 +175,8 @@ public class RdfSubject extends RdfBaseObject {
     public String getExportId() {
     	return getAbout();
     }
+
+	public Set<String> getAllReferencesNames() {
+		return referencesByName.keySet();
+	}
 }
