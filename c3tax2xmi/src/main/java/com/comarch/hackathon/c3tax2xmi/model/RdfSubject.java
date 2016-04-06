@@ -41,7 +41,7 @@ public class RdfSubject extends RdfBaseObject {
         return getElementValue(ELEM_UUID);
     }
     
-    public String getType() {
+    public String getFirstType() {
         RdfElement element = getFirstElement(ELEM_TYPE);
         if (element != null) {
         	return RdfUtils.getAttributeValue(element.getAttributes(), ATTR_RESOURCE);
@@ -51,7 +51,7 @@ public class RdfSubject extends RdfBaseObject {
     
     public Collection<String> getTypes() {
         Collection<RdfElement> collection = RdfUtils.getElements(elements, ELEM_TYPE);
-        Collection<String> types = new ArrayList<String>();
+        Collection<String> types = new ArrayList<>();
         if (collection != null) {
         	for (RdfElement element : collection) {
         		String resource = RdfUtils.getAttributeValue(element.getAttributes(), ATTR_RESOURCE);
@@ -61,6 +61,16 @@ public class RdfSubject extends RdfBaseObject {
         	}
         }
         return types;
+    }
+    
+    public boolean hasType(String type) {
+    	Collection<String> types = getTypes();
+    	for (String check : types) {
+    		if (check.endsWith(type)) {
+    			return true;
+    		}
+    	}
+    	return false;
     }
     
     public String getLabel() {

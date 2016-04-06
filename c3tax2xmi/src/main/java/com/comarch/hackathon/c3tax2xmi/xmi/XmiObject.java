@@ -19,6 +19,12 @@ public abstract class XmiObject {
 	}
 	
 	public abstract void serialize() throws XMLStreamException;
+	public abstract void writeStart() throws XMLStreamException;
+	public abstract void writeEnd() throws XMLStreamException;
+	
+	public void writeEol() throws XMLStreamException {
+		writer.writeCharacters(eol);
+	}
 
 	public void writeComment(String text, String refId) throws XMLStreamException {
 /*
@@ -40,7 +46,7 @@ public abstract class XmiObject {
 		writer.writeCharacters(eol);
 	}
 	
-	public  void writeDependency(String name, String fromRefId, String toRefId) throws XMLStreamException {
+	public void writeDependency(String name, String fromRefId, String toRefId) throws XMLStreamException {
 		// <packagedElement xmi:type="uml:Dependency" xmi:id="EAID_88D30676_83EA_4a1c_9A44_10FC146C0A0B" visibility="public" supplier="EAID_364D25D6_D6F9_48ee_BEA3_4293954709B9" client="EAID_29254430_1110_40dd_B1D4_90D189099EE7"/>
 		writer.writeStartElement("packagedElement");
 		
@@ -54,7 +60,7 @@ public abstract class XmiObject {
 		writer.writeCharacters(eol);
 	}
 
-	public  void writeProperty(String id, String name, String type) throws XMLStreamException {
+	public void writeProperty(String id, String name, String type) throws XMLStreamException {
 		/*
 		 * 	<ownedAttribute xmi:type="uml:Property" name="Amount" xmi:id="BOUML_0x1f518_1" visibility="protected">
 				<type xmi:type="uml:Class" xmi:idref="BOUML_datatype_0"/>

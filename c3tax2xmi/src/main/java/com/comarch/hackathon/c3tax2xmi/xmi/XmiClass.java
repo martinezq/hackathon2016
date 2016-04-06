@@ -27,9 +27,7 @@ public class XmiClass extends XmiSubjectObject {
 		writer.writeAttribute("visibility", "package");
 		
 		writeComment(subject.getDescription());
+		writeComment(XmiGeneratorUtil.link(subject.getExportName(), subject.getAbout()));
 	}
-
-
-
 
 }

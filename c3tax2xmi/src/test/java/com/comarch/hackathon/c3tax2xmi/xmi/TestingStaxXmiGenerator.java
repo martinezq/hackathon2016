@@ -73,8 +73,7 @@ public class TestingStaxXmiGenerator {
 	private List<RdfSubject> getTaxonomyChildren(RdfSubject subject) {
 		List<RdfSubject> taxonomy = new ArrayList<>();
 		for (RdfSubject child : subject.getChildren()) {
-			String type = child.getType();
-			if ("http://192.168.1.25/em/index.php/Special:URIResolver/Category-3ATaxonomy_Nodes".equals(type)) {
+			if (child.hasType("/Category-3ATaxonomy_Nodes")) {
 				taxonomy.add(child);
 			}
 		}
