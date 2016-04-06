@@ -17,11 +17,12 @@ import org.xml.sax.helpers.DefaultHandler;
 public class C3TaxHandler extends DefaultHandler {
 
     public static final String ROOT = "http://192.168.1.25/em/index.php/Special:URIResolver/C3_Taxonomy";
-    public static final String SUB_TAG = "SWIVT:SUBJECT";
-    public static final String REF_TO_TAG = "PROPERTY:IS_REFERRING_TO";
-    public static final String CHILD_OF_TAG = "PROPERTY:IS_CHILD_OF";
-    public static final String REF_RES_TAG = "RDF:RESOURCE";
-    public static final List<String> WRONG_INPUT_TAGS = Arrays.asList(
+    public static final String SUBJECT_ELEM_TAG = "SWIVT:SUBJECT";
+    public static final String REFERENCE_RESOURCE_ATTR_TAG = "RDF:RESOURCE";
+    
+    public static final List<String> DISABLED_INPUT_TYPES = null;
+    public static final List<String> DISABLED_INPUT_ATTRIBUTES = null;
+    public static final List<String> DISABLED_INPUT_ELEMENTS = Arrays.asList(
             new String[]{"PROPERTY:HAS_QUERY"});
     
     private RdfSubject currentSubject = null;
@@ -64,7 +65,7 @@ public class C3TaxHandler extends DefaultHandler {
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 
-        if (qName.equalsIgnoreCase(SUB_TAG)) {
+        if (qName.equalsIgnoreCase(SUBJECT_ELEM_TAG)) {
             currentSubject = new RdfSubject();
             currentSubject.setName(qName);
             currentSubject.setValue(null);
@@ -80,7 +81,7 @@ public class C3TaxHandler extends DefaultHandler {
         } else {
             // Add elements to subject
             if (currentSubject != null) {
-                if (filterInput(qName)) {
+                if (filterInputElement(qName)) {
                     currentElement = new RdfElement();
                     currentElement.setName(qName);
                     currentElement.setValue(null);
@@ -98,7 +99,7 @@ public class C3TaxHandler extends DefaultHandler {
 
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
-        if (qName.equalsIgnoreCase(SUB_TAG)) {
+        if (qName.equalsIgnoreCase(SUBJECT_ELEM_TAG)) {
             endSubjectLog();
             currentSubject = null;
         } else {
@@ -146,7 +147,7 @@ public class C3TaxHandler extends DefaultHandler {
         List<RdfAttribute> result = new ArrayList<>();
         if (attributes != null) {
             for (int i = 0; i < attributes.getLength(); i++) {
-                if (filterInput(attributes.getQName(i))) {
+                if (filterInputAttribute(attributes.getQName(i))) {
                     RdfAttribute attr = new RdfAttribute();
                     attr.setName(attributes.getQName(i));
                     attr.setValue(attributes.getValue(i));
@@ -158,9 +159,18 @@ public class C3TaxHandler extends DefaultHandler {
         return result;
     }
     
-    private boolean filterInput(String attrOrElemName) {
-        if (filterInput && attrOrElemName != null) {
-            if (WRONG_INPUT_TAGS != null && WRONG_INPUT_TAGS.contains(attrOrElemName.toUpperCase())) {
+    private boolean filterInputAttribute(String attributeName) {
+        if (filterInput && DISABLED_INPUT_ATTRIBUTES != null && attributeName != null) {
+            if (DISABLED_INPUT_ATTRIBUTES.contains(attributeName.toUpperCase())) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private boolean filterInputElement(String elementName) {
+        if (filterInput && DISABLED_INPUT_ELEMENTS != null && elementName != null) {
+            if (DISABLED_INPUT_ELEMENTS.contains(elementName.toUpperCase())) {
                 return false;
             }
         }
@@ -171,23 +181,20 @@ public class C3TaxHandler extends DefaultHandler {
         if (subjects != null) {
             for (RdfSubject subject : subjects.values()) {
                 
-                RdfElement childOfElement = RdfUtils.getElement(subject.getElements(), CHILD_OF_TAG);
-                if (childOfElement != null) {
-                    RdfSubject parent = findReference(childOfElement);
-                    if (parent != null) {
-                        subject.setParent(parent);
-                        parent.getChildren().add(subject);
+                // All references
+                Collection<RdfElement> refElements = RdfUtils.getElementsContainsAttribute(subject.getElements(), REFERENCE_RESOURCE_ATTR_TAG);
+                if (refElements != null) {
+                    for (RdfElement element : refElements) {
+                        RdfSubject ref = findReference(element);
+                        if (ref != null ) {
+                            subject.addRefereceByName(element.getName(), ref);
+                        }
                     }
                 }
                 
-                Collection<RdfElement> refToElements = RdfUtils.getElements(subject.getElements(), REF_TO_TAG);
-                if (refToElements != null) {
-                    for (RdfElement element : refToElements) {
-                        RdfSubject ref = findReference(element);
-                        if (ref != null ) {
-                            subject.getReferences().add(ref);
-                        }
-                    }
+                // Child-parent
+                if (subject.getParent() != null) {
+                    subject.getParent().addChildren(subject);
                 }
             }
         }
@@ -195,11 +202,13 @@ public class C3TaxHandler extends DefaultHandler {
     
     private RdfSubject findReference(RdfElement refElement) {
         if (subjects != null) {
-            String id = RdfUtils.getAttributeValue(refElement.getAttributes(), REF_RES_TAG);
+            String id = RdfUtils.getAttributeValue(refElement.getAttributes(), REFERENCE_RESOURCE_ATTR_TAG);
             if (id != null) {
                 RdfSubject refSubject = subjects.get(id);
                 if (refSubject == null) {
-                    //System.out.println("REFERENCE: " + id + " NOT FOUND");
+                    if (loggingEnabled) {
+                        System.out.println("REFERENCE: " + id + " NOT FOUND");
+                    }
                 }
                 return refSubject;
             }

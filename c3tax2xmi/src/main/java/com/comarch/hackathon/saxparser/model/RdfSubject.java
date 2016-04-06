@@ -15,21 +15,19 @@ import com.comarch.hackathon.saxparser.util.RdfUtils;
 public class RdfSubject extends RdfBaseObject {
     
     public static final String ATTR_ABOUT = "RDF:ABOUT";
-    public static final String ATTR_RESOURCE = "rdf:resource";
+    public static final String ATTR_RESOURCE = "RDF:RESOURCE";
     public static final String ELEM_UUID = "PROPERTY:UUID";
     public static final String ELEM_TYPE = "RDF:TYPE";
     public static final String ELEM_LABEL = "RDFS:LABEL";
     public static final String ELEM_DESCRIPTION = "PROPERTY:DESCRIPTION";
     public static final String ELEM_TITLE = "PROPERTY:TITLE";
+    public static final String ELEM_CHILD_OF = "PROPERTY:IS_CHILD_OF";
     
     private List<RdfAttribute> attributes = new ArrayList<>();
     private List<RdfElement> elements = new ArrayList<>();
     
-    private RdfSubject parent = null;
-    private List<RdfSubject> childs = new ArrayList<>();
-    private List<RdfSubject> references = new ArrayList<>();
-    
-    private Map<String, List<RdfSubject>> referecesByName = new HashMap<String, List<RdfSubject>>();
+    private final List<RdfSubject> childs = new ArrayList<>();
+    private final Map<String, List<RdfSubject>> referencesByName = new HashMap<>();
             
     public String getId() {
         return getAttributeValue(ATTR_ABOUT);
@@ -44,7 +42,7 @@ public class RdfSubject extends RdfBaseObject {
     }
     
     public String getType() {
-        RdfElement element = RdfUtils.getElement(elements, ELEM_TYPE);
+        RdfElement element = getElement(ELEM_TYPE);
         if (element != null) {
         	return RdfUtils.getAttributeValue(element.getAttributes(), ATTR_RESOURCE);
         }
@@ -74,6 +72,10 @@ public class RdfSubject extends RdfBaseObject {
     	return name;
     }
     
+    public RdfAttribute getAttribute(String attrName) {
+        return RdfUtils.getAttribute(attributes, attrName);
+    }
+    
     public String getAttributeValue(String attrName) {
         return RdfUtils.getAttributeValue(attributes, attrName);
     }
@@ -86,6 +88,10 @@ public class RdfSubject extends RdfBaseObject {
         this.attributes = attributes;
     }
 
+    public RdfElement getElement(String elemName) {
+        return RdfUtils.getElement(elements, elemName);
+    }
+    
     public String getElementValue(String elemName) {
         return RdfUtils.getElementValue(elements, elemName);
     }
@@ -102,32 +108,42 @@ public class RdfSubject extends RdfBaseObject {
         this.elements = elements;
     }
 
-    public RdfSubject getParent() {
-        return parent;
-    }
-
-    public void setParent(RdfSubject parent) {
-        this.parent = parent;
-    }
-
     public List<RdfSubject> getChildren() {
         return childs;
     }
 
-    public void setChilds(List<RdfSubject> childs) {
-        this.childs = childs;
+    public void addChildren(RdfSubject child) {
+        if (child != null) {
+            childs.add(child);
+        }
     }
-
-    public List<RdfSubject> getReferences() {
-        return references;
-    }
-
-    public void setReferences(List<RdfSubject> references) {
-        this.references = references;
+    
+    public RdfSubject getParent() {
+        List<RdfSubject> childOfRefs = getReferecesByName(ELEM_CHILD_OF);
+        if (childOfRefs != null && childOfRefs.size() == 1) {
+            return childOfRefs.iterator().next();
+        }
+        return null;
     }
     
     public List<RdfSubject> getReferecesByName(String name) {
-		return referecesByName.get(name);
-	}
-
+        if (name != null) {
+            String refName = name.toUpperCase();
+            return referencesByName.get(refName);
+        }
+        return null;
+    }
+    
+    public void addRefereceByName(String name, RdfSubject reference) {
+        if (name != null && reference != null) {
+            String refName = name.toUpperCase();
+            if (referencesByName.get(refName) == null) {
+                List<RdfSubject> refs = new ArrayList<>();
+                refs.add(reference);
+                referencesByName.put(refName, refs);
+            } else {
+                referencesByName.get(refName).add(reference);
+            }
+        }
+    }
 }

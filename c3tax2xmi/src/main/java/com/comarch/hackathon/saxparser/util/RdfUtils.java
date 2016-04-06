@@ -43,6 +43,18 @@ public class RdfUtils {
         return result;
     }
     
+    public static Collection<RdfElement> getElementsContainsAttribute(Collection<RdfElement> elements, String attrName) {
+        Collection<RdfElement> result = new ArrayList<>();
+        if (elements != null && attrName != null) {
+            for (RdfElement elem : elements) {
+                if (getAttribute(elem.getAttributes(), attrName) != null) {
+                    result.add(elem);
+                }
+            }
+        }
+        return result;
+    }
+    
     public static String getAttributeValue(Collection<RdfAttribute> attributes, String attrName) {
         RdfAttribute attribute = getAttribute(attributes, attrName);
         if (attribute != null) {
