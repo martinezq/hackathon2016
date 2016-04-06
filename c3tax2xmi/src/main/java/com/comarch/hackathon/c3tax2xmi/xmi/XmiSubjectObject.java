@@ -18,6 +18,16 @@ public abstract class XmiSubjectObject extends XmiObject {
 		writeComment(text, subject.getExportId());
 	}
 	
+	protected void writeTitledComment(String title, String text) throws XMLStreamException {
+		StringBuilder sb = new StringBuilder(text.length());
+		sb.append("<b>");
+		sb.append(title);
+		sb.append("</b><br>");
+		sb.append(text);
+		sb.append("<p>");
+		writeComment(sb.toString());
+	}
+	
 	public abstract void writeStart() throws XMLStreamException;
 	
 	public void writeEnd() throws XMLStreamException {

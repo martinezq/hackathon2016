@@ -25,6 +25,7 @@ public class XmiPackage extends XmiSubjectObject {
 		writer.writeAttribute(xmiNs, "id", subject.getExportId());
 		writer.writeAttribute("name", subject.getExportName());
 		
+		writeComment(XmiGeneratorUtil.link(subject.getExportName(), subject.getAbout()));
 		writeComment(subject.getDescription());
 	}	
 

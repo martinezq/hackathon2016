@@ -3,6 +3,7 @@ package com.comarch.hackathon.c3tax2xmi.xmi;
 import java.util.List;
 import java.util.Set;
 
+
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
@@ -29,8 +30,18 @@ public class XmiClass extends XmiSubjectObject {
 		writer.writeAttribute("name", subject.getExportName());
 		writer.writeAttribute("visibility", "package");
 		
-		writeComment(subject.getDescription());
 		writeComment(XmiGeneratorUtil.link(subject.getExportName(), subject.getAbout()));
+		writeTitledComment("Description", subject.getDescription());
+		
+		List<RdfSubject> refereces = subject.getReferecesByName("property:Is_referring_to");
+		if (refereces != null) {
+			StringBuilder sb = new StringBuilder();
+			for (RdfSubject ref : refereces) {
+				sb.append(XmiGeneratorUtil.link(ref.getLabel(), ref.getAbout()));
+				sb.append("<br>");
+			}
+			writeTitledComment("References", sb.toString());
+		}
 	}
 	
 	@Override
