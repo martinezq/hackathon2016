@@ -1,8 +1,11 @@
 package com.comarch.hackathon.saxparser.model;
 
-import com.comarch.hackathon.saxparser.util.RdfUtils;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import com.comarch.hackathon.saxparser.util.RdfUtils;
 
 /**
  *
@@ -23,6 +26,8 @@ public class RdfSubject extends RdfBaseObject {
     private RdfSubject parent = null;
     private List<RdfSubject> childs = new ArrayList<>();
     private List<RdfSubject> references = new ArrayList<>();
+    
+    private Map<String, List<RdfSubject>> referecesByName = new HashMap<String, List<RdfSubject>>();
             
     public String getId() {
         return getAttributeValue(ATTR_ABOUT);
@@ -99,5 +104,9 @@ public class RdfSubject extends RdfBaseObject {
     public void setReferences(List<RdfSubject> references) {
         this.references = references;
     }
+    
+    public List<RdfSubject> getReferecesByName(String name) {
+		return referecesByName.get(name);
+	}
 
 }
