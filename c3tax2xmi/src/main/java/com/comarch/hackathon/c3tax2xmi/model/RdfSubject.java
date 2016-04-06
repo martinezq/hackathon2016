@@ -75,7 +75,7 @@ public class RdfSubject extends RdfBaseObject {
         return getElementValue(ELEM_TITLE);
     }
     
-    public String buildName() {
+    public String getExportName() {
     	String name = getTitle();
     	if (name == null) {
     		name = getLabel();
@@ -159,5 +159,9 @@ public class RdfSubject extends RdfBaseObject {
                 referencesByName.get(refName).add(reference);
             }
         }
+    }
+    
+    public String getExportId() {
+    	return getAbout();
     }
 }

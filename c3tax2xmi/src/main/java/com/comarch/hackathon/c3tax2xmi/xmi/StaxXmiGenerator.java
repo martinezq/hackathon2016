@@ -88,22 +88,19 @@ public class StaxXmiGenerator {
 	}
 	
 	private void outputPackage(RdfSubject subject) throws XMLStreamException {
-		String name = subject.buildName();
 		List<RdfSubject> children = getTaxonomyChildren(subject);
 		if (!children.isEmpty()) {
-			//String packageId = UUID.randomUUID().toString();
-			String packageId = subject.getId();
-			XmiPackage.writeStart(writer, packageId, name);
-			XmiObject.writeComment(writer, UUID.randomUUID().toString(), subject.getDescription(), packageId);
+			XmiPackage xmiPackage = new XmiPackage(writer, subject);
+			xmiPackage.writeStart();
 			for (RdfSubject child : children) {
 				if (--limit <= 0) {
 					break;
 				}
 				outputPackage(child);
 			}
-			XmiPackage.writeEnd(writer);
+			xmiPackage.writeEnd();
 		} else {
-			new XmiClass(subject).serialize(writer);
+			new XmiClass(writer, subject).serialize();
 		}
 	}
 	

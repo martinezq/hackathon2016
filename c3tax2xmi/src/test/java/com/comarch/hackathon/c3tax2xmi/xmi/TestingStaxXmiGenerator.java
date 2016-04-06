@@ -82,7 +82,7 @@ public class TestingStaxXmiGenerator {
 	}
 	
 	private void outputPackage(RdfSubject subject) throws XMLStreamException {
-		String name = subject.buildName();
+		String name = subject.getExportName();
 		List<RdfSubject> children = getTaxonomyChildren(subject);
 		if (!children.isEmpty()) {
 			String packageId = UUID.randomUUID().toString();
@@ -161,7 +161,7 @@ public class TestingStaxXmiGenerator {
 		writer.writeStartElement("ownedElement");
 		writer.writeAttribute(xmiNs, "type", "uml:Class");
 		writer.writeAttribute(xmiNs, "id", id);
-		writer.writeAttribute("name", subject.buildName());
+		writer.writeAttribute("name", subject.getExportName());
 		writer.writeAttribute("visibility", "package");
 		
 		writeComment(UUID.randomUUID().toString(), subject.getDescription(), id);
