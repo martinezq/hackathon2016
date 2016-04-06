@@ -73,4 +73,16 @@ public class RdfUtils {
     	
     	return result;
     }
+    
+    public static Set<String> findUniqueRdfTypes(Collection<RdfSubject> subjects) {
+    	Set<String> result = new HashSet<String>();
+    	
+    	for(RdfSubject subject: subjects) {
+    		for(RdfElement element: subject.getElements("rdf:type")) {
+    			result.add(element.getAttribute("rdf:resource").getValue());
+    		}
+    	}
+    	
+    	return result;
+    }
 }

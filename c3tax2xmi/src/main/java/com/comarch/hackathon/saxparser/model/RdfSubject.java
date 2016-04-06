@@ -1,6 +1,7 @@
 package com.comarch.hackathon.saxparser.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,6 +72,10 @@ public class RdfSubject extends RdfBaseObject {
 
     public String getElementValue(String elemName) {
         return RdfUtils.getElementValue(elements, elemName);
+    }
+    
+    public Collection<RdfElement> getElements(String elemName) {
+        return RdfUtils.getElements(elements, elemName);
     }
     
     public List<RdfElement> getElements() {
