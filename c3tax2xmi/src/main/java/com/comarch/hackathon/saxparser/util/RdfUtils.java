@@ -16,14 +16,14 @@ import com.comarch.hackathon.saxparser.model.RdfSubject;
 public class RdfUtils {
     
     public static String getElementValue(Collection<RdfElement> elements, String elemName) {
-        RdfElement element = getElement(elements, elemName);
+        RdfElement element = getFirstElement(elements, elemName);
         if (element != null) {
             return element.getValue();
         }
         return null;
     }
     
-    public static RdfElement getElement(Collection<RdfElement> elements, String elemName) {
+    public static RdfElement getFirstElement(Collection<RdfElement> elements, String elemName) {
         Collection<RdfElement> elems = getElements(elements, elemName);
         if (elems != null && !elems.isEmpty()) {
             return elems.iterator().next();

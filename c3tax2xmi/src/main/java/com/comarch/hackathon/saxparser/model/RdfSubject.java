@@ -42,9 +42,23 @@ public class RdfSubject extends RdfBaseObject {
     }
     
     public String getType() {
-        RdfElement element = getElement(ELEM_TYPE);
+        RdfElement element = getFirstElement(ELEM_TYPE);
         if (element != null) {
         	return RdfUtils.getAttributeValue(element.getAttributes(), ATTR_RESOURCE);
+        }
+        return null;
+    }
+    
+    public Collection<String> getTypes() {
+        Collection<RdfElement> collection = RdfUtils.getElements(elements, ELEM_TYPE);
+        Collection<String> types = new ArrayList<String>();
+        if (collection != null) {
+        	for (RdfElement element : collection) {
+        		String resource = RdfUtils.getAttributeValue(element.getAttributes(), ATTR_RESOURCE);
+        		if (resource != null) {
+        			types.add(resource);
+        		}
+        	}
         }
         return null;
     }
@@ -88,8 +102,8 @@ public class RdfSubject extends RdfBaseObject {
         this.attributes = attributes;
     }
 
-    public RdfElement getElement(String elemName) {
-        return RdfUtils.getElement(elements, elemName);
+    public RdfElement getFirstElement(String elemName) {
+        return RdfUtils.getFirstElement(elements, elemName);
     }
     
     public String getElementValue(String elemName) {
