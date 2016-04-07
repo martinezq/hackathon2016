@@ -1,5 +1,6 @@
 package com.comarch.hackathon.c3tax2xmi.xmi;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -97,17 +98,32 @@ public abstract class XmiSubjectObject extends XmiObject {
 	}
 	
 	protected void writeDependencies() throws XMLStreamException {
+		writeDependencies(subject);
+	}
+	
+	protected void writeDependencies(RdfSubject subject) throws XMLStreamException {
 		Set<String> referenceNames = subject.getAllReferencesNames();
 		
 		for (String refName: referenceNames) {
 			List<RdfSubject> list = subject.getReferecesByName(refName);
-			String refDisplayName = refName.split(":")[1].replaceAll("_", " ");
+			String refDisplayName = refName.split(":")[1].replaceAll("_", " ").toLowerCase();
 			for (RdfSubject refSubject: list) {
 				if (config.shouldWrite(refSubject)) {
-					writeDependencyTo(refDisplayName, refSubject);
+					if(!refSubject.equals(this.subject)) {
+						writeDependencyTo(refDisplayName, refSubject);
+					}
 				}
 			}
 		}
-
+		
+		Collection<RdfSubject> subObjects = subject.getReferecesByName("property:Has_subobject");
+		
+		if (subObjects != null) {
+			for(RdfSubject subObject: subObjects) {
+				writeDependencies(subObject);
+			}
+		}
 	}
+	
+
 }
