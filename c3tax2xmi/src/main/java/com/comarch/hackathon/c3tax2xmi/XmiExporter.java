@@ -14,6 +14,7 @@ import com.comarch.hackathon.c3tax2xmi.xmi.StaxXmiGenerator;
 public class XmiExporter {
 
 	private C3TaxParser parser = new C3TaxParser();
+	private StaxXmiGenerator generator = new StaxXmiGenerator();
 	
 	public XmiExporter() {
 	}
@@ -40,12 +41,17 @@ public class XmiExporter {
 	}
 	
 	public void exportToFile(String outFile) {
-		StaxXmiGenerator generator = new StaxXmiGenerator(parser.getParsedElements(), getRoot());
+		generator.setSubjects(parser.getParsedElements());
+		generator.setRoot(getRoot());
 		generator.write(outFile);
 	}
 	
 	public RdfSubject getRoot() {
 		return parser.getRootElement();
+	}
+
+	public void setLimit(int limit) {
+		generator.setObjectCountLimit(limit);
 	}
 	
 }

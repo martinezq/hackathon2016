@@ -21,8 +21,8 @@ public class StaxXmiGenerator {
 	
 	XMLStreamWriter writer;
 	
-	Collection<RdfSubject> subjects;
-	RdfSubject root;
+	private Collection<RdfSubject> subjects;
+	private RdfSubject root;
 	Collection<XmiObject> objects;
 	
 	public static String[] DEFAULT_LEGAL_TYPES = {
@@ -34,11 +34,9 @@ public class StaxXmiGenerator {
 			"/Category-3AInformation_Products"
 		};
 
-	public StaxXmiGenerator(Collection<RdfSubject> subjects, RdfSubject root) {
-		this.subjects = subjects;
-		this.root = root;
+	public StaxXmiGenerator() {
 	}
-	
+
 	public void write(String file) {
 		try {
 			FileWriter fileWriter = new FileWriter(file);
@@ -57,7 +55,7 @@ public class StaxXmiGenerator {
 			objects = new ArrayList<>();
 			
 			System.out.println("Generating objects...");
-			outputPackage(root);
+			writePackageTree(root);
 			
 			xmiModel.writeEnd();
 			
@@ -91,7 +89,7 @@ public class StaxXmiGenerator {
 		return taxonomy;
 	}
 	
-	private void outputPackage(RdfSubject subject) throws XMLStreamException {
+	private void writePackageTree(RdfSubject subject) throws XMLStreamException {
 		List<RdfSubject> children = getTaxonomyChildren(subject);
 		if (!children.isEmpty()) {
 			XmiPackage xmiPackage = new XmiPackage(writer, subject);
@@ -101,7 +99,7 @@ public class StaxXmiGenerator {
 				if (--countdown <= 0) {
 					break;
 				}
-				outputPackage(child);
+				writePackageTree(child);
 				countPackages++;
 			}
 			xmiPackage.writeEnd();
@@ -119,6 +117,22 @@ public class StaxXmiGenerator {
 
 	public void setObjectCountLimit(int objectCountLimit) {
 		this.objectCountLimit = objectCountLimit;
+	}
+
+	public Collection<RdfSubject> getSubjects() {
+		return subjects;
+	}
+
+	public void setSubjects(Collection<RdfSubject> subjects) {
+		this.subjects = subjects;
+	}
+
+	public RdfSubject getRoot() {
+		return root;
+	}
+
+	public void setRoot(RdfSubject root) {
+		this.root = root;
 	}
 	
 }

@@ -18,7 +18,9 @@ public class StaxXmiGeneratorTest {
 			C3TaxParser parser = new C3TaxParser();
 			parser.parse(new File("q:\\hackathon\\eahackathon\\Coding Challange\\em.rdf" ));
 			
-			StaxXmiGenerator generator = new StaxXmiGenerator(parser.getParsedElements(), parser.getRootElement());
+			StaxXmiGenerator generator = new StaxXmiGenerator();
+			generator.setSubjects(parser.getParsedElements());
+			generator.setRoot(parser.getRootElement());
 			
 			generator.write("out/stax.xml");
 		} catch (SAXException | IOException | ParserConfigurationException e) {
