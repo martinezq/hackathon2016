@@ -2,6 +2,7 @@ package com.comarch.hackathon.c3tax2xmi.gui;
 
 import com.comarch.hackathon.c3tax2xmi.model.RdfSubject;
 import com.comarch.hackathon.c3tax2xmi.saxparser.C3TaxParser;
+import com.comarch.hackathon.c3tax2xmi.xmi.GeneratorConfig;
 import com.comarch.hackathon.c3tax2xmi.xmi.StaxXmiGenerator;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -15,7 +16,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JTree;
-import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellEditor;
@@ -37,7 +37,8 @@ public class ImportExportDialog extends javax.swing.JDialog {
         initLookAndFeel();
         initComponents();
         initActions();
-        initTree();
+        initSubjectTree();
+        initCategoryList();
     }
 
     /**
@@ -55,6 +56,9 @@ public class ImportExportDialog extends javax.swing.JDialog {
         subjectScrollPane = new javax.swing.JScrollPane();
         subjectTree = new javax.swing.JTree();
         exportFileLabel = new javax.swing.JLabel();
+        categoryLabel = new javax.swing.JLabel();
+        categoryScrollPane = new javax.swing.JScrollPane();
+        categoryList = new javax.swing.JList<>();
         exportFilePathText = new javax.swing.JTextField();
         selectExportFileButton = new javax.swing.JButton();
         exportButton = new javax.swing.JButton();
@@ -76,6 +80,10 @@ public class ImportExportDialog extends javax.swing.JDialog {
 
         exportFileLabel.setText("Export xmi file");
 
+        categoryLabel.setText("Change category selection for export");
+
+        categoryScrollPane.setViewportView(categoryList);
+
         exportFilePathText.setEditable(false);
         exportFilePathText.setText("<SELECT FILE>");
 
@@ -94,6 +102,7 @@ public class ImportExportDialog extends javax.swing.JDialog {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(categoryScrollPane)
                     .addComponent(subjectScrollPane)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(importFileLabel)
@@ -112,7 +121,10 @@ public class ImportExportDialog extends javax.swing.JDialog {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(exportFilePathText, javax.swing.GroupLayout.DEFAULT_SIZE, 553, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(selectExportFileButton)))
+                        .addComponent(selectExportFileButton))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(categoryLabel)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -124,8 +136,12 @@ public class ImportExportDialog extends javax.swing.JDialog {
                     .addComponent(importFilePathText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(selectImportFileButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(subjectScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 394, Short.MAX_VALUE)
-                .addGap(18, 18, 18)
+                .addComponent(subjectScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 277, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(categoryLabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(categoryScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(selectExportFileButton)
                     .addComponent(exportFilePathText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -141,25 +157,10 @@ public class ImportExportDialog extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                ImportExportDialog dialog = new ImportExportDialog();
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
-            }
-        });
-    }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel categoryLabel;
+    private javax.swing.JList<String> categoryList;
+    private javax.swing.JScrollPane categoryScrollPane;
     private javax.swing.JButton closeButton;
     private javax.swing.JButton exportButton;
     private javax.swing.JLabel exportFileLabel;
@@ -193,12 +194,12 @@ public class ImportExportDialog extends javax.swing.JDialog {
                     File file = fc.getSelectedFile();
                     importFilePathText.setText(file.getAbsolutePath());
 
-                    // Parsowanie info
+                    // Info
                     long t = System.currentTimeMillis();
                     info("Parsing RDF file " + file.getAbsolutePath() + " ...");
                     setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
-                    // Parsowanie
+                    // Parsing RDF
                     try {
                         parser.parse(file);
                         refreshTree();
@@ -206,7 +207,7 @@ public class ImportExportDialog extends javax.swing.JDialog {
                         JOptionPane.showMessageDialog(ImportExportDialog.this, "File parsing error:\n" + ex.getMessage(), "Parsing file error", JOptionPane.ERROR_MESSAGE);
                     }
 
-                    // Parsowanie end
+                    // Info
                     setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
                     info("Parsing RDF file finished, time: " + (System.currentTimeMillis() - t) + "[ms]");
                 }
@@ -235,14 +236,21 @@ public class ImportExportDialog extends javax.swing.JDialog {
                     Collection<RdfSubject> selection = getSelectedSubjects();
                     if (selection != null && !selection.isEmpty()) {
                         File file = new File(filePath);
+                        
+                        // Info
                         long t = System.currentTimeMillis();
                         info("Writing XMI file " + file.getAbsolutePath() + " ...");
+                        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                         
+                        // XMI generating
                         StaxXmiGenerator generator = new StaxXmiGenerator();
                         generator.setRoot(getRootSubject());
                         generator.setSubjects(getSelectedSubjects());
+                        generator.setCategoriesToExport(getSelectedCategories());
                         generator.write(file.getAbsolutePath());
                         
+                        // Info
+                        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
                         info("Writing XMI finished, time: " + (System.currentTimeMillis() - t) + "[ms]");
                     } else {
                         JOptionPane.showMessageDialog(ImportExportDialog.this, "Select objects to export", "Export file error", JOptionPane.ERROR_MESSAGE);
@@ -261,7 +269,21 @@ public class ImportExportDialog extends javax.swing.JDialog {
         });
     }
     
-    private void initTree() {
+    private void initCategoryList() {
+        categoryList.setModel(new javax.swing.AbstractListModel<String>() {
+            @Override
+            public int getSize() {
+                return GeneratorConfig.DEFAULT_CATEGORIES.length;
+            }
+            @Override
+            public String getElementAt(int i) {
+                return GeneratorConfig.DEFAULT_CATEGORIES[i];
+            }
+        });
+        categoryList.setSelectionInterval(0, GeneratorConfig.DEFAULT_CATEGORIES.length - 1);
+    }
+    
+    private void initSubjectTree() {
         subjectTree.setModel(new DefaultTreeModel(null));
         //subjectTree.setRootVisible(false);
         
@@ -426,6 +448,10 @@ public class ImportExportDialog extends javax.swing.JDialog {
             }
         }
         return result;
+    }
+    
+    private Collection<String> getSelectedCategories() {
+        return categoryList.getSelectedValuesList();
     }
     
     private void info(String info) {
