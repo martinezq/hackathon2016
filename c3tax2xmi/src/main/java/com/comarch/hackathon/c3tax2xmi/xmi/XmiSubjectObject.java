@@ -1,6 +1,5 @@
 package com.comarch.hackathon.c3tax2xmi.xmi;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -79,10 +78,11 @@ public abstract class XmiSubjectObject extends XmiObject {
 		writer.writeAttribute(xmiNs, "type", "uml:Package");
 		RdfElement modDate = subject.getFirstElement("swivt:wikiPageModificationDate");
 		if (modDate != null && modDate.getValue() != null) {
+			String time = "2016-01-02 00:00:00";
 			writeEol();
 			writer.writeStartElement("times");
-			writer.writeAttribute("created", modDate.getValue());
-			writer.writeAttribute("modified", modDate.getValue());
+			writer.writeAttribute("created", time);
+			writer.writeAttribute("modified", time);
 			writer.writeEndElement();
 		}
 	}
@@ -100,7 +100,7 @@ public abstract class XmiSubjectObject extends XmiObject {
 	}
 	
 	public static boolean shouldWrite(RdfSubject subject) {
-		return subject.hasAnyType(StaxXmiGenerator.LEGAL_TYPES);
+		return subject.hasAnyType(StaxXmiGenerator.DEFAULT_LEGAL_TYPES);
 	}
 	
 	protected void writeDependencies() throws XMLStreamException {

@@ -13,9 +13,9 @@ import com.comarch.hackathon.c3tax2xmi.model.RdfSubject;
 
 public class StaxXmiGenerator {
 	
-	public static int OBJECT_LIMIT = 1000;
+	private int objectCountLimit = 1000;
 
-	private int limit;
+	private int countdown;
 	private int countPackages;
 	private int countClasses;
 	
@@ -24,7 +24,7 @@ public class StaxXmiGenerator {
 	Collection<RdfSubject> subjects;
 	Collection<XmiObject> objects;
 	
-	public static String[] LEGAL_TYPES = {
+	public static String[] DEFAULT_LEGAL_TYPES = {
 			"/Category-3ATaxonomy_Nodes", 
 			"/Category-3AServices", 
 			"/Category-3AApplications",
@@ -61,7 +61,7 @@ public class StaxXmiGenerator {
 			XmiModel xmiModel = new XmiModel(writer);
 			xmiModel.writeStart();
 			
-			limit = OBJECT_LIMIT;
+			countdown = objectCountLimit;
 			countPackages = countClasses = 0;
 			
 			List<RdfSubject> roots = findRoots();
@@ -111,7 +111,7 @@ public class StaxXmiGenerator {
 			objects.add(xmiPackage);
 			xmiPackage.writeStart();
 			for (RdfSubject child : children) {
-				if (--limit <= 0) {
+				if (--countdown <= 0) {
 					break;
 				}
 				outputPackage(child);
@@ -124,6 +124,14 @@ public class StaxXmiGenerator {
 			objects.add(xmiClass);
 			countClasses++;
 		}
+	}
+
+	public int getObjectCountLimit() {
+		return objectCountLimit;
+	}
+
+	public void setObjectCountLimit(int objectCountLimit) {
+		this.objectCountLimit = objectCountLimit;
 	}
 	
 }

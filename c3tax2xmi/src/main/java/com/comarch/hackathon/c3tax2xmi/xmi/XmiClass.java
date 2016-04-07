@@ -1,9 +1,5 @@
 package com.comarch.hackathon.c3tax2xmi.xmi;
 
-import java.util.List;
-import java.util.Set;
-
-
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 

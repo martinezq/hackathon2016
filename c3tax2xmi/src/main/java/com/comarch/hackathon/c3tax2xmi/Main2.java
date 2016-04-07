@@ -1,55 +1,66 @@
 package com.comarch.hackathon.c3tax2xmi;
 
+import java.io.IOException;
+
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.xml.sax.SAXException;
 
 public class Main2 {
+	
+	private static final String OPT_OUT = "o";
+	private static final String OPT_FILE = "f";
+	private static final String OPT_URL = "w";
+	private static final String OPT_BATCH = "b";
+	private static final String OPT_USERNAME = "u";
+	private static final String OPT_PASSWORD = "p";
 
-	@SuppressWarnings("static-access")
-	public static void main(String[] args) throws ParseException {
+	public static void main(String[] args) throws ParseException, SAXException, IOException, ParserConfigurationException {
 		Options options = new Options();        
-        
-		options.addOption("out", true, "Output XMI file name");
-        options.addOption("file", true, "Load RDF from file");
-        options.addOption("url", true, "Load RDF from url");
-        options.addOption("username", true, "Basic authentication username (optionally used with -url");
-        options.addOption("password", true, "Basic authentication password (optionally used with -url");
+		options.addOption(OPT_OUT, "out", true, "Output XMI file name");
+        options.addOption(OPT_FILE, "file", true, "Load RDF from file");
+        options.addOption(OPT_URL, "url", true, "Load RDF from url");
+        options.addOption(OPT_BATCH, "batch", false, "Batch mode");
+        options.addOption(OPT_USERNAME, "username", true, "Basic authentication username (optionally used with --url");
+        options.addOption(OPT_PASSWORD, "password", true, "Basic authentication password (optionally used with --url");
         
         CommandLineParser parser = new DefaultParser();
-        CommandLine cmd = parser.parse( options, args);
+        CommandLine cmd = parser.parse(options, args);
         
-        if(!cmd.hasOption("out")) {
-        	printHelp("out path not specified", options);
+        XmiExporter exporter = new XmiExporter();
+        
+        if (cmd.hasOption(OPT_URL)) {
+        	String url = cmd.getOptionValue(OPT_URL);
+        	
+            if (cmd.hasOption(OPT_USERNAME) && cmd.hasOption(OPT_PASSWORD)) {
+            	exporter.loadFromUrl(url, cmd.getOptionValue(OPT_USERNAME), cmd.getOptionValue(OPT_PASSWORD));
+            } else {
+            	exporter.loadFromUrl(url);
+            }
+        } else if (cmd.hasOption(OPT_FILE)) {
+            exporter.loadFromFile(cmd.getOptionValue("file"));
+        } else if (cmd.hasOption(OPT_BATCH)) {
+        	printHelp("Input not specified", options);
         	return;
         }
         
-        XmiExporter exporter = new XmiExporter(cmd.getOptionValue("out"));
-        
-        if(cmd.hasOption("url")) {
-        	String url = cmd.getOptionValue("url");
-        	String username = cmd.getOptionValue("username");
-        	String password = cmd.getOptionValue("password");
-        	
-            if(cmd.hasOption("username") && cmd.hasOption("password")) {
-            	exporter.exportFromUrl(url, username, password);
-            } else {
-            	exporter.exportFromUrl(url);
-            }
-            
-            return;
+        if (cmd.hasOption(OPT_BATCH)) {
+        	if (cmd.hasOption(OPT_OUT)) {
+        		exporter.exportToFile(cmd.getOptionValue(OPT_OUT));
+        	} else {
+        		printHelp("Output file not specified", options);
+            	return;
+        	}
         }
         
-        if(cmd.hasOption("file")) {
-            exporter.exportFromFile(cmd.getOptionValue("file"));
-            return;
-        } 
+        // Start GUI here.
 
-        printHelp("Invalid use", options);
-        
 	}
 	
 	private static void printHelp(String msg, Options options) {

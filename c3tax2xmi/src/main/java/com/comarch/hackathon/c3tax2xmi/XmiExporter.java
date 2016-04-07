@@ -12,40 +12,35 @@ import com.comarch.hackathon.c3tax2xmi.xmi.StaxXmiGenerator;
 
 public class XmiExporter {
 
-	private String xmiResultPath;
+	private C3TaxParser parser = new C3TaxParser();
 	
-	public XmiExporter(String xmiResultPath) {
-		this.xmiResultPath = xmiResultPath;
+	public XmiExporter() {
 	}
 	
-	public void exportFromFile(String path) {
+	public void loadFromFile(String path) throws SAXException, IOException, ParserConfigurationException {
 		File file = new File(path);
-		exportFromFile(file);
+		loadSourceFile(file);
 	}
 	
-	public void exportFromUrl(String url) {
+	public void loadFromUrl(String url) throws SAXException, IOException, ParserConfigurationException {
 		RdfDownloader downloader = new RdfDownloader(url);
 		File file = downloader.download();
-		exportFromFile(file);
+		loadSourceFile(file);
 	}
 
-	public void exportFromUrl(String url, String user, String pass) {
+	public void loadFromUrl(String url, String user, String pass) throws SAXException, IOException, ParserConfigurationException {
 		RdfDownloader downloader = new RdfDownloader(url, user, pass);
 		File file = downloader.download();
-		exportFromFile(file);
+		loadSourceFile(file);
 	}
 	
-	public void exportFromFile(File file) {
-		try {
-			C3TaxParser parser = new C3TaxParser();
-			parser.parse(file);
-			
-			StaxXmiGenerator generator = new StaxXmiGenerator(parser.getParsedElements());
-			
-			generator.write(xmiResultPath);
-		} catch (SAXException | IOException | ParserConfigurationException e) {
-			throw new RuntimeException(e);
-		}
+	private void loadSourceFile(File file) throws SAXException, IOException, ParserConfigurationException {
+		parser.parse(file);
+	}
+	
+	public void exportToFile(String outFile) {
+		StaxXmiGenerator generator = new StaxXmiGenerator(parser.getParsedElements());
+		generator.write(outFile);
 	}
 	
 }
