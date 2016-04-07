@@ -43,21 +43,6 @@ public class ImportExportDialog extends javax.swing.JDialog {
         initSubjectTree();
         initCategoryList();
     }
-    
-    /*public static void main(String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                ImportExportDialog dialog = new ImportExportDialog();
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
-            }
-        });
-    }*/
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -282,6 +267,7 @@ public class ImportExportDialog extends javax.swing.JDialog {
             @Override
             public void actionPerformed(ActionEvent e) {
                 ImportExportDialog.this.setVisible(false);
+                System.exit(0);
             }
         });
     }
@@ -487,5 +473,9 @@ public class ImportExportDialog extends javax.swing.JDialog {
 	public javax.swing.JTextField getImportFilePathText() {
 		return importFilePathText;
 	}
-	
+
+	public javax.swing.JTextField getExportFilePathText() {
+		return exportFilePathText;
+	}
+
 }

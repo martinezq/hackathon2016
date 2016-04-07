@@ -41,8 +41,14 @@ public class Main {
         
         CommandLineParser parser = new DefaultParser();
         CommandLine cmd = parser.parse(options, args);
+        boolean isBatch = cmd.hasOption(OPT_BATCH);
         
         XmiExporter exporter = new XmiExporter();
+        ImportExportDialog importExportDialog = null;
+        
+        if (!isBatch) {
+        	importExportDialog = new ImportExportDialog();
+        }
         
         if (cmd.hasOption(OPT_URL)) {
         	String url = cmd.getOptionValue(OPT_URL);
@@ -54,7 +60,7 @@ public class Main {
             }
         } else if (cmd.hasOption(OPT_FILE)) {
             exporter.loadFromFile(cmd.getOptionValue("file"));
-        } else if (cmd.hasOption(OPT_BATCH)) {
+        } else if (isBatch) {
         	printHelp("Input not specified", options);
         	return;
         }
@@ -85,7 +91,7 @@ public class Main {
         	}
         }
         
-        if (cmd.hasOption(OPT_BATCH)) {
+        if (isBatch) {
         	if (cmd.hasOption(OPT_OUT)) {
         		exporter.exportToFile(cmd.getOptionValue(OPT_OUT));
         	} else {
@@ -95,23 +101,28 @@ public class Main {
         }
         
         // Start GUI here.
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                ImportExportDialog dialog = new ImportExportDialog();
-                dialog.setParser(exporter.getParser());
-                if (cmd.hasOption(OPT_FILE)) {
-                	dialog.getImportFilePathText().setText(cmd.getOptionValue(OPT_FILE));
-                	dialog.refreshTree();
-                }
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
-            }
-        });
+        if (!isBatch) {
+	    	final ImportExportDialog dialog = importExportDialog;
+	        java.awt.EventQueue.invokeLater(new Runnable() {
+	            public void run() {
+	                dialog.setParser(exporter.getParser());
+	                if (cmd.hasOption(OPT_FILE)) {
+	                	dialog.getImportFilePathText().setText(cmd.getOptionValue(OPT_FILE));
+	                	dialog.refreshTree();
+	                }
+	                if (cmd.hasOption(OPT_OUT)) {
+	                	dialog.getExportFilePathText().setText(cmd.getOptionValue(OPT_OUT));
+	                }
+	                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+	                    @Override
+	                    public void windowClosing(java.awt.event.WindowEvent e) {
+	                        System.exit(0);
+	                    }
+	                });
+	                dialog.setVisible(true);
+	            }
+	        });
+        }
 
 	}
 	
