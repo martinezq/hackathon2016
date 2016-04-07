@@ -52,7 +52,7 @@ public class ImportExportDialog extends javax.swing.JDialog {
         initCategoryList();
     }
     
-    public static void main(String args[]) {
+    /*public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 ImportExportDialog dialog = new ImportExportDialog();
@@ -65,7 +65,7 @@ public class ImportExportDialog extends javax.swing.JDialog {
                 dialog.setVisible(true);
             }
         });
-    }
+    }*/
     
     /**
      * This method is called from within the constructor to initialize the form.
@@ -348,6 +348,7 @@ public class ImportExportDialog extends javax.swing.JDialog {
                     if (node.getUserObject() instanceof SubjectTreeNode) {
                         SubjectTreeNode subjectTreeNode = (SubjectTreeNode)node.getUserObject();
                         JCheckBox checkBox = new JCheckBox(subjectTreeNode.getSubject().getExportName(), subjectTreeNode.isChecked());
+                        checkBox.setBackground(tree.getBackground());
                         return checkBox;
                     }
                 }
@@ -365,6 +366,7 @@ public class ImportExportDialog extends javax.swing.JDialog {
                     if (node.getUserObject() instanceof SubjectTreeNode) {
                         SubjectTreeNode subjectTreeNode = (SubjectTreeNode)node.getUserObject();
                         JCheckBox checkBox = new JCheckBox(subjectTreeNode.getSubject().getExportName(), subjectTreeNode.isChecked());
+                        checkBox.setBackground(tree.getBackground());
                         checkBox.addActionListener(new ActionListener() {
                             @Override
                             public void actionPerformed(ActionEvent e) {
