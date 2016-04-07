@@ -2,6 +2,7 @@ package com.comarch.hackathon.c3tax2xmi.gui;
 
 import com.comarch.hackathon.c3tax2xmi.model.RdfSubject;
 import com.comarch.hackathon.c3tax2xmi.saxparser.C3TaxParser;
+import com.comarch.hackathon.c3tax2xmi.util.RdfUtils;
 import com.comarch.hackathon.c3tax2xmi.xmi.GeneratorConfig;
 import com.comarch.hackathon.c3tax2xmi.xmi.StaxXmiGenerator;
 import java.awt.Component;
@@ -10,10 +11,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EventObject;
+import java.util.List;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.DefaultListModel;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JTree;
 import javax.swing.UIManager;
@@ -34,6 +41,7 @@ public class ImportExportDialog extends javax.swing.JDialog {
 	 */
 	private static final long serialVersionUID = 5180349036763470504L;
 	private C3TaxParser parser = new C3TaxParser();
+    private final Collection<String> defaultCategories = Arrays.asList(GeneratorConfig.DEFAULT_CATEGORIES);
     
     public ImportExportDialog() {
         super();
@@ -43,7 +51,22 @@ public class ImportExportDialog extends javax.swing.JDialog {
         initSubjectTree();
         initCategoryList();
     }
-
+    
+    public static void main(String args[]) {
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                ImportExportDialog dialog = new ImportExportDialog();
+                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                    @Override
+                    public void windowClosing(java.awt.event.WindowEvent e) {
+                        System.exit(0);
+                    }
+                });
+                dialog.setVisible(true);
+            }
+        });
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -204,7 +227,8 @@ public class ImportExportDialog extends javax.swing.JDialog {
                     // Parsing RDF
                     try {
                         parser.parse(file);
-                        refreshTree();
+                        refreshCategoryList();
+                        refreshSubjectTree();
                     } catch (Exception ex) {
                         JOptionPane.showMessageDialog(ImportExportDialog.this, "File parsing error:\n" + ex.getMessage(), "Parsing file error", JOptionPane.ERROR_MESSAGE);
                     }
@@ -273,19 +297,41 @@ public class ImportExportDialog extends javax.swing.JDialog {
     }
     
     private void initCategoryList() {
-        categoryList.setModel(new javax.swing.AbstractListModel<String>() {
-			private static final long serialVersionUID = 1L;
-			
-			@Override
-            public int getSize() {
-                return GeneratorConfig.DEFAULT_CATEGORIES.length;
-            }
-            @Override
-            public String getElementAt(int i) {
-                return GeneratorConfig.DEFAULT_CATEGORIES[i];
+        categoryList.setModel(new DefaultListModel<>());
+        categoryList.setCellRenderer(new DefaultListCellRenderer(){
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                if (value instanceof String) {
+                    String name = RdfUtils.getRdfTypeFriendlyName((String)value);
+                    return super.getListCellRendererComponent(list, name, index, isSelected, cellHasFocus);
+                }
+                return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
             }
         });
-        categoryList.setSelectionInterval(0, GeneratorConfig.DEFAULT_CATEGORIES.length - 1);
+    }
+    
+    private void refreshCategoryList() {
+        DefaultListModel model = (DefaultListModel)categoryList.getModel();
+        model.removeAllElements();
+        if (parser.getHandler().getSubjects() != null) {
+            Collection<String> categories = RdfUtils.findUniqueRdfTypes(parser.getHandler().getSubjects());
+            
+            int index = 0;
+            if (categories != null) {
+                List<String> categories2 = new ArrayList<>(categories);
+                Collections.sort(categories2);
+                for (String cat : categories2) {
+                    String elementName = cat;
+                    if (cat.contains("/")) {
+                        elementName = cat.substring(cat.lastIndexOf("/"));
+                    }
+                    model.addElement(elementName);
+                    if (defaultCategories.contains(elementName)) {
+                        categoryList.addSelectionInterval(index, index);
+                    }
+                    index ++;
+                }
+            }
+        }
     }
     
     private void initSubjectTree() {
@@ -358,7 +404,7 @@ public class ImportExportDialog extends javax.swing.JDialog {
         }
     }
     
-    public void refreshTree() {
+    public void refreshSubjectTree() {
         DefaultTreeModel treeModel = ((DefaultTreeModel)subjectTree.getModel());
         treeModel.setRoot(null);
         if (parser.getHandler().getRootElement() != null) {

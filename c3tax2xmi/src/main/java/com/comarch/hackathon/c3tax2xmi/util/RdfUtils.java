@@ -111,4 +111,18 @@ public class RdfUtils {
     	
     	return result;
     }
+    
+    public static String getRdfTypeFriendlyName(String name) {
+    	if (name != null) {
+            String name1 = name;
+            String[] parts = name.split("/");
+            if (parts != null && parts.length > 0) {
+                name1 = parts[parts.length - 1];
+            }
+            name1 = name1.replaceAll("3A", "").replaceAll("Category-", "").replaceAll("_", " ");
+            return name1;
+        }
+        
+        return name;
+    }
 }

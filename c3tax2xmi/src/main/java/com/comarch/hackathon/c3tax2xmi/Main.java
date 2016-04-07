@@ -108,7 +108,7 @@ public class Main {
 	                dialog.setParser(exporter.getParser());
 	                if (cmd.hasOption(OPT_FILE)) {
 	                	dialog.getImportFilePathText().setText(cmd.getOptionValue(OPT_FILE));
-	                	dialog.refreshTree();
+	                	dialog.refreshSubjectTree();
 	                }
 	                if (cmd.hasOption(OPT_OUT)) {
 	                	dialog.getExportFilePathText().setText(cmd.getOptionValue(OPT_OUT));
