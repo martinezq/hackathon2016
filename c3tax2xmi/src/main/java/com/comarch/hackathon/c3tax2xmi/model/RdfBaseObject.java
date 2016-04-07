@@ -24,5 +24,11 @@ public abstract class RdfBaseObject {
         this.value = value;
     }
     
+    @Override
+    public String toString() {
+    	StringBuilder sb = new StringBuilder();
+    	sb.append('"').append(name).append("\" = \"").append(value).append('"');
+    	return sb.toString();
+    }
     
 }

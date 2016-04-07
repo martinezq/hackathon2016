@@ -21,11 +21,11 @@ public class XmiGeneratorUtil {
 		Map<String, List<RdfSubject>> subObjectGroups = new HashMap<String, List<RdfSubject>>();
 		
 		Collection<RdfSubject> subObjects = subject.getReferecesByName("property:Has_subobject");
-		if(subObjects != null) {
+		if (subObjects != null) {
 			for(RdfSubject subObject: subObjects) {
 				String typeGroup = subObject.getElementValue("property:Type");
 				List<RdfSubject> list;
-				if(!subObjectGroups.containsKey(typeGroup)) {
+				if (!subObjectGroups.containsKey(typeGroup)) {
 					list = new LinkedList<RdfSubject>();
 					subObjectGroups.put(typeGroup, list);
 				} else {

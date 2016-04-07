@@ -17,6 +17,7 @@ public class StaxXmiGenerator {
 	private int countdown;
 	private int countPackages;
 	private int countClasses;
+	private boolean writeExtensions = false;
 	
 	GeneratorConfig config = new GeneratorConfig();
 	
@@ -50,13 +51,15 @@ public class StaxXmiGenerator {
 			
 			xmiModel.writeEnd();
 			
-			XmiExtension xmiExtension = new XmiExtension(config);
-			xmiExtension.writeStart();
-			for (XmiObject obj : objects) {
-				obj.extensionStart();
-				obj.extensionEnd();
+			if (writeExtensions) {
+				XmiExtension xmiExtension = new XmiExtension(config);
+				xmiExtension.writeStart();
+				for (XmiObject obj : objects) {
+					obj.extensionStart();
+					obj.extensionEnd();
+				}
+				xmiExtension.writeEnd();
 			}
-			xmiExtension.writeEnd();
 			
 			xmiFile.writeEnd();
 
@@ -132,6 +135,10 @@ public class StaxXmiGenerator {
 
 	public void setCategoriesToExport(Collection<String> categoriesToExport) {
 		config.setCategoriesToExport(categoriesToExport);
+	}
+
+	public void setWriteExtensions(boolean b) {
+		this.writeExtensions = b;
 	}
 	
 }

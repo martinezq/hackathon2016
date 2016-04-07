@@ -65,5 +65,9 @@ public class XmiExporter {
 	public void setRoot(String root) {
 		this.root = root;
 	}
+
+	public void setWriteExtensions(boolean b) {
+		generator.setWriteExtensions(b);
+	}
 	
 }
