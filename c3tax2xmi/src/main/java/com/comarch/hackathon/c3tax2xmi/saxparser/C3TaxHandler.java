@@ -115,7 +115,11 @@ public class C3TaxHandler extends DefaultHandler {
         if (currentSubject != null) {
             if (currentElement != null) {
                 String value = new String(ch, start, length);
-                currentElement.setValue(value);
+                if (currentElement.getValue() != null) {
+                    currentElement.setValue(currentElement.getValue() + value);
+                } else {
+                    currentElement.setValue(value);
+                }
             } else {
                 // Nothing to do
             }
