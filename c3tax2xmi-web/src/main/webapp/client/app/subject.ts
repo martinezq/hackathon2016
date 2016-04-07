@@ -1,11 +1,14 @@
 export class Subject{
+    
+    id: string;
     name: string;
     children: Subject;
-
+        
     expanded:boolean;
     checked:boolean;
 
-    constructor(name, children, expanded = false) {
+    constructor(id, name, children, expanded = false) {
+        this.id = id;
         this.name = name;
         this.children = children;
         this.expanded = expanded;

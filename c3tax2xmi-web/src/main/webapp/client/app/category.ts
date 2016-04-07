@@ -1,9 +1,11 @@
 export class Category{
     name: string;
+    id: string;
 
     checked:boolean;
 
-    constructor(name) {
+    constructor(id, name) {
+        this.id = id;
         this.name = name;
         this.checked = false;
     }
