@@ -40,18 +40,17 @@ public class C3TaxHandler extends DefaultHandler {
     }
     
     public RdfSubject getRootElement() {
-        //int count = 0;
         RdfSubject result = null;
         if (subjects != null) {
             for (RdfSubject subject : subjects.values()) {
+            	if ("C3 Taxonomy".equals(subject.getLabel())) {
+                    result = subject;
+                    break;
+            	}
                 if (ROOT.equalsIgnoreCase(subject.getId())) {
                     result = subject;
                     break;
                 }
-                //if (subject.getParent() == null) {
-                //    result = subject;
-                //    count ++;
-                //}
             }
         }
         return result;

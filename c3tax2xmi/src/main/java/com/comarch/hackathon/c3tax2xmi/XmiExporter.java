@@ -7,6 +7,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
+import com.comarch.hackathon.c3tax2xmi.model.RdfSubject;
 import com.comarch.hackathon.c3tax2xmi.saxparser.C3TaxParser;
 import com.comarch.hackathon.c3tax2xmi.xmi.StaxXmiGenerator;
 
@@ -39,8 +40,12 @@ public class XmiExporter {
 	}
 	
 	public void exportToFile(String outFile) {
-		StaxXmiGenerator generator = new StaxXmiGenerator(parser.getParsedElements());
+		StaxXmiGenerator generator = new StaxXmiGenerator(parser.getParsedElements(), getRoot());
 		generator.write(outFile);
+	}
+	
+	public RdfSubject getRoot() {
+		return parser.getRootElement();
 	}
 	
 }

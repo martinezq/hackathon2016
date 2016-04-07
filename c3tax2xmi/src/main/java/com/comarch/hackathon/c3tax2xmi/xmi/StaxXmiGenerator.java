@@ -22,6 +22,7 @@ public class StaxXmiGenerator {
 	XMLStreamWriter writer;
 	
 	Collection<RdfSubject> subjects;
+	RdfSubject root;
 	Collection<XmiObject> objects;
 	
 	public static String[] DEFAULT_LEGAL_TYPES = {
@@ -33,22 +34,11 @@ public class StaxXmiGenerator {
 			"/Category-3AInformation_Products"
 		};
 
-	public StaxXmiGenerator(Collection<RdfSubject> subjects) {
+	public StaxXmiGenerator(Collection<RdfSubject> subjects, RdfSubject root) {
 		this.subjects = subjects;
+		this.root = root;
 	}
 	
-	private List<RdfSubject> findRoots() {
-		List<RdfSubject> roots = new ArrayList<>();
-		for (RdfSubject subject : subjects) {
-			if ("C3 Taxonomy".equals(subject.getLabel())) {
-				System.out.println("Root " + subject.getId());
-				roots.add(subject);
-			}
-		}
-		System.out.println("Found roots: " + roots.size());
-		return roots;
-	}
-
 	public void write(String file) {
 		try {
 			FileWriter fileWriter = new FileWriter(file);
@@ -64,13 +54,10 @@ public class StaxXmiGenerator {
 			countdown = objectCountLimit;
 			countPackages = countClasses = 0;
 			
-			List<RdfSubject> roots = findRoots();
 			objects = new ArrayList<>();
 			
 			System.out.println("Generating objects...");
-			for (RdfSubject root : roots) {
-				outputPackage(root);
-			}
+			outputPackage(root);
 			
 			xmiModel.writeEnd();
 			
