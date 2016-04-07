@@ -46,29 +46,27 @@ public class ImportExportDialog extends javax.swing.JDialog {
     private final Collection<String> defaultCategories = Arrays.asList(GeneratorConfig.DEFAULT_CATEGORIES);
     
     public ImportExportDialog() {
-        super();
+        super(null, java.awt.Dialog.ModalityType.TOOLKIT_MODAL);
         initLookAndFeel();
         initComponents();
         initActions();
         initSubjectTree();
         initCategoryList();
-        initPosition();
+        initIconAndPosition();
     }
     
-    /*public static void main(String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                ImportExportDialog dialog = new ImportExportDialog();
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
-            }
-        });
-    }*/
+    private void initIconAndPosition() {
+        setIconImage(GuiUtils.loadImage("icon.png"));
+        GuiUtils.centreOnScreen(this);
+    }
+    
+    private void initLookAndFeel() {
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
     
     /**
      * This method is called from within the constructor to initialize the form.
@@ -94,7 +92,7 @@ public class ImportExportDialog extends javax.swing.JDialog {
         infoLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("RdfToXmi Exporter");
+        setTitle("Comarch RDF converter");
 
         importFileLabel.setText("Import rdf file");
 
@@ -202,18 +200,6 @@ public class ImportExportDialog extends javax.swing.JDialog {
     private javax.swing.JTree subjectTree;
     // End of variables declaration//GEN-END:variables
 
-    private void initLookAndFeel() {
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-    
-    private void initPosition() {
-        GuiUtils.centreOnScreen(this);
-    }
-    
     private void initActions() {
         selectImportFileButton.addActionListener(new ActionListener() {
             @Override
