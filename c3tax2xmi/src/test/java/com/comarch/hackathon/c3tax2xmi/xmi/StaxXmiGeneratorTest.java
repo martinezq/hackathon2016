@@ -8,6 +8,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
+import com.comarch.hackathon.c3tax2xmi.saxparser.C3TaxHandler;
 import com.comarch.hackathon.c3tax2xmi.saxparser.C3TaxParser;
 
 public class StaxXmiGeneratorTest {
@@ -17,10 +18,11 @@ public class StaxXmiGeneratorTest {
 		try {
 			C3TaxParser parser = new C3TaxParser();
 			parser.parse(new File("q:\\hackathon\\eahackathon\\Coding Challange\\em.rdf" ));
+			C3TaxHandler handler = parser.getHandler();
 			
 			StaxXmiGenerator generator = new StaxXmiGenerator();
-			generator.setSubjects(parser.getParsedElements());
-			generator.setRoot(parser.getRootElement());
+			generator.setSubjects(handler.getSubjects());
+			generator.setRoot(handler.getRootElement());
 			
 			generator.write("out/stax.xml");
 		} catch (SAXException | IOException | ParserConfigurationException e) {

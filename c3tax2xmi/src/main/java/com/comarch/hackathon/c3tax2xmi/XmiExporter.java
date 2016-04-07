@@ -8,7 +8,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
-import com.comarch.hackathon.c3tax2xmi.model.RdfSubject;
+import com.comarch.hackathon.c3tax2xmi.saxparser.C3TaxHandler;
 import com.comarch.hackathon.c3tax2xmi.saxparser.C3TaxParser;
 import com.comarch.hackathon.c3tax2xmi.xmi.StaxXmiGenerator;
 
@@ -16,6 +16,8 @@ public class XmiExporter {
 
 	private C3TaxParser parser = new C3TaxParser();
 	private StaxXmiGenerator generator = new StaxXmiGenerator();
+	private C3TaxHandler handler;
+	private String root;
 	
 	public XmiExporter() {
 	}
@@ -39,24 +41,29 @@ public class XmiExporter {
 	
 	private void loadSourceFile(File file) throws SAXException, IOException, ParserConfigurationException {
 		parser.parse(file);
+		handler = parser.getHandler();
 	}
 	
 	public void exportToFile(String outFile) {
-		generator.setSubjects(parser.getParsedElements());
-		generator.setRoot(getRoot());
+		generator.setSubjects(handler.getSubjects());
+		if (root == null) {
+			generator.setRoot(handler.getRootElement());
+		} else {
+			generator.setRoot(handler.getElementByLabel(root));
+		}
 		generator.write(outFile);
 	}
 	
-	public RdfSubject getRoot() {
-		return parser.getRootElement();
-	}
-
 	public void setLimit(int limit) {
 		generator.setObjectCountLimit(limit);
 	}
 
 	public void setCategoriesToExport(Collection<String> categoriesToExport) {
 		generator.setCategoriesToExport(categoriesToExport);
+	}
+	
+	public void setRoot(String root) {
+		this.root = root;
 	}
 	
 }

@@ -21,6 +21,7 @@ public class Main {
 	private static final String OPT_USERNAME = "u";
 	private static final String OPT_PASSWORD = "p";
 	private static final String OPT_LIMIT = "l";
+	private static final String OPT_ROOT = "r";
 
 	public static void main(String[] args) throws ParseException, SAXException, IOException, ParserConfigurationException {
 		System.out.println("Hackathon 2016 - Comarch RDF converter");
@@ -32,6 +33,7 @@ public class Main {
         options.addOption(OPT_USERNAME, "username", true, "Basic authentication username (optionally used with --url");
         options.addOption(OPT_PASSWORD, "password", true, "Basic authentication password (optionally used with --url");
         options.addOption(OPT_LIMIT, "limit", true, "Limit the number of generated objects");
+        options.addOption(OPT_ROOT, "root", true, "Select root object");
         
         CommandLineParser parser = new DefaultParser();
         CommandLine cmd = parser.parse(options, args);
@@ -61,6 +63,10 @@ public class Main {
         		System.err.println("Invalid limit value (" + e.toString() + ")");
         		return;
         	}
+        }
+        
+        if (cmd.hasOption(OPT_ROOT)) {
+        	exporter.setRoot(cmd.getOptionValue(OPT_ROOT));
         }
         
         if (cmd.hasOption(OPT_BATCH)) {

@@ -16,14 +16,12 @@ import org.xml.sax.helpers.DefaultHandler;
 public class C3TaxHandler extends DefaultHandler {
 
     private final boolean loggingEnabled = false;
-    public static final String ROOT = "http://192.168.1.25/em/index.php/Special:URIResolver/C3_Taxonomy";
     public static final String SUBJECT_ELEM_TAG = "SWIVT:SUBJECT";
     public static final String REFERENCE_RESOURCE_ATTR_TAG = "RDF:RESOURCE";
     
     private RdfSubject currentSubject = null;
     private RdfElement currentElement = null;
-    //private final List<RdfSubject> subjects = new ArrayList<>();
-    private final Map<String,RdfSubject> subjects = new LinkedHashMap<>();
+    private final Map<String, RdfSubject> subjects = new LinkedHashMap<>();
     
     private boolean filterInput = false;
     private final C3TaxFilter filter = new C3TaxFilter();
@@ -39,21 +37,21 @@ public class C3TaxHandler extends DefaultHandler {
         return null;
     }
     
-    public RdfSubject getRootElement() {
+    public RdfSubject getElementByLabel(String label) {
         RdfSubject result = null;
         if (subjects != null) {
             for (RdfSubject subject : subjects.values()) {
-            	if ("C3 Taxonomy".equals(subject.getLabel())) {
+            	if (label.equals(subject.getLabel())) {
                     result = subject;
                     break;
             	}
-                if (ROOT.equalsIgnoreCase(subject.getId())) {
-                    result = subject;
-                    break;
-                }
             }
         }
         return result;
+    }
+    
+    public RdfSubject getRootElement() {
+    	return getElementByLabel("C3 Taxonomy");
     }
 
     @Override
