@@ -5,7 +5,6 @@ import com.comarch.hackathon.c3tax2xmi.saxparser.C3TaxParser;
 import com.comarch.hackathon.c3tax2xmi.util.RdfUtils;
 import com.comarch.hackathon.c3tax2xmi.xmi.GeneratorConfig;
 import com.comarch.hackathon.c3tax2xmi.xmi.StaxXmiGenerator;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
@@ -25,12 +24,13 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JTree;
 import javax.swing.UIManager;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellEditor;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
 
 /**
  *
@@ -55,7 +55,7 @@ public class ImportExportDialog extends javax.swing.JDialog {
         initPosition();
     }
     
-    /*spublic static void main(String args[]) {
+    /*public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 ImportExportDialog dialog = new ImportExportDialog();
@@ -234,8 +234,8 @@ public class ImportExportDialog extends javax.swing.JDialog {
                     // Parsing RDF
                     try {
                         parser.parse(file);
-                        refreshCategoryList();
                         refreshSubjectTree();
+                        refreshCategoryList();
                     } catch (Exception ex) {
                         JOptionPane.showMessageDialog(ImportExportDialog.this, "File parsing error:\n" + ex.getMessage(), "Parsing file error", JOptionPane.ERROR_MESSAGE);
                     }
@@ -266,8 +266,8 @@ public class ImportExportDialog extends javax.swing.JDialog {
             public void actionPerformed(ActionEvent e) {
                 String filePath = exportFilePathText.getText();
                 if (filePath != null && !filePath.equals("<SELECT FILE>")) {
-                    Collection<RdfSubject> selection = getSelectedSubjects();
-                    if (selection != null && !selection.isEmpty()) {
+                    Collection<RdfSubject> checkedSubjects = getCheckedSubjects();
+                    if (checkedSubjects != null && !checkedSubjects.isEmpty()) {
                         File file = new File(filePath);
                         
                         // Info
@@ -278,7 +278,7 @@ public class ImportExportDialog extends javax.swing.JDialog {
                         // XMI generating
                         StaxXmiGenerator generator = new StaxXmiGenerator();
                         generator.setRoot(getRootSubject());
-                        generator.setSubjects(getSelectedSubjects());
+                        generator.setSubjects(checkedSubjects);
                         generator.setCategoriesToExport(getSelectedCategories());
                         generator.write(file.getAbsolutePath());
                         
@@ -304,7 +304,7 @@ public class ImportExportDialog extends javax.swing.JDialog {
     }
     
     @SuppressWarnings("serial")
-	private void initCategoryList() {
+    private void initCategoryList() {
         categoryList.setModel(new DefaultListModel<>());
         categoryList.setCellRenderer(new DefaultListCellRenderer(){
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
@@ -315,11 +315,29 @@ public class ImportExportDialog extends javax.swing.JDialog {
                 return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
             }
         });
+        
+        categoryList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                Collection<String> selectedCategories = getSelectedCategories();
+                Collection<SubjectTreeNode> allNodes = getSubjectTreeNodes();
+                if (allNodes != null) {
+                    for (SubjectTreeNode node : allNodes) {
+                        node.setSelected(false);
+                        
+                        if (node.getSubject().hasAnyType(selectedCategories)) {
+                            node.setSelected(true);
+                        }
+                    }
+                }
+                subjectTree.repaint();
+            }
+        });
     }
     
     @SuppressWarnings({ "unchecked", "rawtypes" })
 	public void refreshCategoryList() {
-		DefaultListModel model = (DefaultListModel)categoryList.getModel();
+        DefaultListModel model = (DefaultListModel)categoryList.getModel();
         model.removeAllElements();
         if (parser.getHandler().getSubjects() != null) {
             Collection<String> categories = RdfUtils.findUniqueRdfTypes(parser.getHandler().getSubjects());
@@ -358,9 +376,9 @@ public class ImportExportDialog extends javax.swing.JDialog {
                         SubjectTreeNode subjectTreeNode = (SubjectTreeNode)node.getUserObject();
                         JCheckBox checkBox = new JCheckBox(subjectTreeNode.getSubject().getExportName(), subjectTreeNode.isChecked());
                         if (subjectTreeNode.isSelected()) {
-                            checkBox.setBackground(Color.BLUE);
+                            checkBox.setBackground(categoryList.getSelectionBackground());
                         } else {
-                            checkBox.setBackground(tree.getBackground());
+                            checkBox.setBackground(subjectTree.getBackground());
                         }
                         return checkBox;
                     }
@@ -379,7 +397,7 @@ public class ImportExportDialog extends javax.swing.JDialog {
                         SubjectTreeNode subjectTreeNode = (SubjectTreeNode)node.getUserObject();
                         JCheckBox checkBox = new JCheckBox(subjectTreeNode.getSubject().getExportName(), subjectTreeNode.isChecked());
                         if (subjectTreeNode.isSelected()) {
-                            checkBox.setBackground(Color.BLUE);
+                            checkBox.setBackground(categoryList.getSelectionBackground());
                         } else {
                             checkBox.setBackground(tree.getBackground());
                         }
@@ -387,7 +405,7 @@ public class ImportExportDialog extends javax.swing.JDialog {
                             @Override
                             public void actionPerformed(ActionEvent e) {
                                 checkNode(node, !subjectTreeNode.isChecked());
-                                refreshNode(node);
+                                subjectTree.repaint();
                             }
                         });
                         return checkBox;
@@ -418,22 +436,6 @@ public class ImportExportDialog extends javax.swing.JDialog {
                 if (childNode instanceof DefaultMutableTreeNode) {
                     checkNode((DefaultMutableTreeNode)childNode, check);
                 }
-            }
-        }
-    }
-    
-    private void refreshNode(DefaultMutableTreeNode node) {
-        if (node != null) {
-            TreePath path = new TreePath(node.getPath());
-            if (subjectTree.isExpanded(path)) {
-                //treeModel.reload(node);
-                //treeModel.nodeChanged(node);
-                //treeModel.nodeStructureChanged(node);
-                //subjectTree.collapsePath(path);
-                //subjectTree.expandPath(path);
-                //subjectTree.invalidate();
-                //subjectTree.revalidate();
-                subjectTree.repaint();
             }
         }
     }
@@ -498,38 +500,49 @@ public class ImportExportDialog extends javax.swing.JDialog {
         return null;
     }
     
-    public Collection<RdfSubject> getSelectedSubjects() {
+    public Collection<RdfSubject> getCheckedSubjects() {
         Collection<RdfSubject> result = new ArrayList<>();
-        DefaultTreeModel treeModel = ((DefaultTreeModel)subjectTree.getModel());
-        if (treeModel.getRoot() instanceof DefaultMutableTreeNode) {
-            DefaultMutableTreeNode root = (DefaultMutableTreeNode)treeModel.getRoot();
-            if (root.getUserObject() instanceof SubjectTreeNode) {
-                SubjectTreeNode subjectTreeNode = (SubjectTreeNode)root.getUserObject();
+        Collection<SubjectTreeNode> subjectTreeNodes = getSubjectTreeNodes();
+        if (subjectTreeNodes != null) {
+            for (SubjectTreeNode subjectTreeNode : subjectTreeNodes) {
                 if (subjectTreeNode.isChecked()) {
                     result.add(subjectTreeNode.getSubject());
-                }
-                Collection<RdfSubject> childSelection = getSelectedSubjects(root);
-                if (childSelection != null) {
-                    result.addAll(childSelection);
                 }
             }
         }
         return result;
     }
     
-    private Collection<RdfSubject> getSelectedSubjects(DefaultMutableTreeNode parentNode) {
-        Collection<RdfSubject> result = new ArrayList<>();
+    public Collection<SubjectTreeNode> getSubjectTreeNodes() {
+        Collection<SubjectTreeNode> result = new ArrayList<>();
+        DefaultTreeModel treeModel = ((DefaultTreeModel)subjectTree.getModel());
+        if (treeModel.getRoot() instanceof DefaultMutableTreeNode) {
+            DefaultMutableTreeNode root = (DefaultMutableTreeNode)treeModel.getRoot();
+            if (root.getUserObject() instanceof SubjectTreeNode) {
+                SubjectTreeNode subjectTreeNode = (SubjectTreeNode)root.getUserObject();
+                result.add(subjectTreeNode);
+
+                Collection<SubjectTreeNode> children = getSubjectTreeNodes(root);
+                if (children != null) {
+                    result.addAll(children);
+                }
+            }
+        }
+        return result;
+    }
+    
+    private Collection<SubjectTreeNode> getSubjectTreeNodes(DefaultMutableTreeNode parentNode) {
+        Collection<SubjectTreeNode> result = new ArrayList<>();
         for (int i = 0; i < parentNode.getChildCount(); i ++) {
             if (parentNode.getChildAt(i) instanceof DefaultMutableTreeNode) {
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode)parentNode.getChildAt(i);
                 if (node.getUserObject() instanceof SubjectTreeNode) {
                     SubjectTreeNode subjectTreeNode = (SubjectTreeNode)node.getUserObject();
-                    if (subjectTreeNode.isChecked()) {
-                        result.add(subjectTreeNode.getSubject());
-                    }
-                    Collection<RdfSubject> childSelection = getSelectedSubjects(node);
-                    if (childSelection != null) {
-                        result.addAll(childSelection);
+                    result.add(subjectTreeNode);
+
+                    Collection<SubjectTreeNode> children = getSubjectTreeNodes(node);
+                    if (children != null) {
+                        result.addAll(children);
                     }
                 }
             }
