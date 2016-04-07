@@ -1,6 +1,8 @@
 package com.comarch.hackathon.c3tax2xmi.xmi;
 
 import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -30,11 +32,17 @@ public class StaxXmiGenerator {
 
 	public void write(String file) {
 		try {
-			
 			FileWriter fileWriter = new FileWriter(file);
-
+			write(fileWriter);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public void write(Writer argWriter) {
+		try {
 			XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newInstance();
-			config.writer = xmlOutputFactory.createXMLStreamWriter(fileWriter);
+			config.writer = xmlOutputFactory.createXMLStreamWriter(argWriter);
 			
 			XmiFile xmiFile = new XmiFile(config);
 			xmiFile.writeStart();
@@ -72,6 +80,8 @@ public class StaxXmiGenerator {
 			throw new RuntimeException(e);
 		}
 	}
+	
+
 	
 	private List<RdfSubject> getTaxonomyChildren(RdfSubject subject) {
 		List<RdfSubject> taxonomy = new ArrayList<>();

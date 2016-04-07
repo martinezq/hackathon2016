@@ -1,0 +1,17 @@
+<div id="container">
+	<div id="top">
+		<button class="large" (click)="refresh()">Refresh</button>
+		<button class="large" (click)="export()">Export</button>
+	</div>
+
+	<div id="bottom">
+		<div id="subjects">
+			<h2>Select root element:</h2>
+			<tree-view [subjects]="subjects"></tree-view>	
+		</div>
+		<div id="categories">
+			<h2>Select categories:</h2>
+			<list-view [categories]="categories"></list-view>
+		</div>
+	</div>
+</div>
