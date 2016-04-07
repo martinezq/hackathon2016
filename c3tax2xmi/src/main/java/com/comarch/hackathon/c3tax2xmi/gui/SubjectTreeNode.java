@@ -9,10 +9,12 @@ import com.comarch.hackathon.c3tax2xmi.model.RdfSubject;
 public class SubjectTreeNode {
     private RdfSubject subject;
     private boolean checked = true;
+    private boolean selected = false;
 
-    public SubjectTreeNode(RdfSubject subject, boolean checked) {
+    public SubjectTreeNode(RdfSubject subject, boolean checked, boolean selected) {
         this.subject = subject;
         this.checked = checked;
+        this.selected = selected;
     }
 
     public RdfSubject getSubject() {
@@ -29,6 +31,14 @@ public class SubjectTreeNode {
 
     public void setChecked(boolean checked) {
         this.checked = checked;
+    }
+
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
     }
     
 }

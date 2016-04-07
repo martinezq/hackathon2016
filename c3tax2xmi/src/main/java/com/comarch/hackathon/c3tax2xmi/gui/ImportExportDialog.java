@@ -5,6 +5,7 @@ import com.comarch.hackathon.c3tax2xmi.saxparser.C3TaxParser;
 import com.comarch.hackathon.c3tax2xmi.util.RdfUtils;
 import com.comarch.hackathon.c3tax2xmi.xmi.GeneratorConfig;
 import com.comarch.hackathon.c3tax2xmi.xmi.StaxXmiGenerator;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
@@ -29,6 +30,7 @@ import javax.swing.tree.DefaultTreeCellEditor;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 
 /**
  *
@@ -53,7 +55,7 @@ public class ImportExportDialog extends javax.swing.JDialog {
         initPosition();
     }
     
-    /*public static void main(String args[]) {
+    /*spublic static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 ImportExportDialog dialog = new ImportExportDialog();
@@ -353,7 +355,11 @@ public class ImportExportDialog extends javax.swing.JDialog {
                     if (node.getUserObject() instanceof SubjectTreeNode) {
                         SubjectTreeNode subjectTreeNode = (SubjectTreeNode)node.getUserObject();
                         JCheckBox checkBox = new JCheckBox(subjectTreeNode.getSubject().getExportName(), subjectTreeNode.isChecked());
-                        checkBox.setBackground(tree.getBackground());
+                        if (subjectTreeNode.isSelected()) {
+                            checkBox.setBackground(Color.BLUE);
+                        } else {
+                            checkBox.setBackground(tree.getBackground());
+                        }
                         return checkBox;
                     }
                 }
@@ -371,12 +377,16 @@ public class ImportExportDialog extends javax.swing.JDialog {
                     if (node.getUserObject() instanceof SubjectTreeNode) {
                         SubjectTreeNode subjectTreeNode = (SubjectTreeNode)node.getUserObject();
                         JCheckBox checkBox = new JCheckBox(subjectTreeNode.getSubject().getExportName(), subjectTreeNode.isChecked());
-                        checkBox.setBackground(tree.getBackground());
+                        if (subjectTreeNode.isSelected()) {
+                            checkBox.setBackground(Color.BLUE);
+                        } else {
+                            checkBox.setBackground(tree.getBackground());
+                        }
                         checkBox.addActionListener(new ActionListener() {
                             @Override
                             public void actionPerformed(ActionEvent e) {
                                 checkNode(node, !subjectTreeNode.isChecked());
-                                treeModel.nodeStructureChanged(node);
+                                refreshNode(node);
                             }
                         });
                         return checkBox;
@@ -407,6 +417,22 @@ public class ImportExportDialog extends javax.swing.JDialog {
                 if (childNode instanceof DefaultMutableTreeNode) {
                     checkNode((DefaultMutableTreeNode)childNode, check);
                 }
+            }
+        }
+    }
+    
+    private void refreshNode(DefaultMutableTreeNode node) {
+        if (node != null) {
+            TreePath path = new TreePath(node.getPath());
+            if (subjectTree.isExpanded(path)) {
+                //treeModel.reload(node);
+                //treeModel.nodeChanged(node);
+                //treeModel.nodeStructureChanged(node);
+                //subjectTree.collapsePath(path);
+                //subjectTree.expandPath(path);
+                //subjectTree.invalidate();
+                //subjectTree.revalidate();
+                subjectTree.repaint();
             }
         }
     }
@@ -454,7 +480,7 @@ public class ImportExportDialog extends javax.swing.JDialog {
     
     private DefaultMutableTreeNode subjectToNode(RdfSubject subject) {
         if (subject != null) {
-            return new DefaultMutableTreeNode(new SubjectTreeNode(subject, true));
+            return new DefaultMutableTreeNode(new SubjectTreeNode(subject, true, false));
         } 
         return null;
     }
