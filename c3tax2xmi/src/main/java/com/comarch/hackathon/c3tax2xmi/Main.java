@@ -12,7 +12,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.xml.sax.SAXException;
 
-public class Main2 {
+public class Main {
 	
 	private static final String OPT_OUT = "o";
 	private static final String OPT_FILE = "f";
@@ -22,6 +22,7 @@ public class Main2 {
 	private static final String OPT_PASSWORD = "p";
 
 	public static void main(String[] args) throws ParseException, SAXException, IOException, ParserConfigurationException {
+		System.out.println("Hackathon 2016 - Comarch RDF converter");
 		Options options = new Options();        
 		options.addOption(OPT_OUT, "out", true, "Output XMI file name");
         options.addOption(OPT_FILE, "file", true, "Load RDF from file");

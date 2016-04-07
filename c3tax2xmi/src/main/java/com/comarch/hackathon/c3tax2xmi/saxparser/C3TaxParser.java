@@ -32,19 +32,18 @@ public class C3TaxParser {
         //saxParser.setProperty("jdk.xml.entityExpansionLimit", "0");
 
         long t = System.currentTimeMillis();
-        System.out.println("START PARSING, FILE: " + file.getAbsolutePath());
+        System.out.println("Loading and parsing file: " + file.getAbsolutePath());
         
         handler = new C3TaxHandler(filterInput);
         saxParser.parse(file, handler);
         
-        System.out.println("END PARSING, TIME: " + (System.currentTimeMillis() - t) + "[ms]");
+        System.out.println("Parsing finished, time: " + (System.currentTimeMillis() - t) + "[ms]");
         
         if (fillReferences) {
             t = System.currentTimeMillis();
-            System.out.println("START FILLING REFERENCES");
+            System.out.println("Filling references...");
             handler.fillReferences();
-            System.out.println("END FILLING REFERENCES, TIME: " + (System.currentTimeMillis() - t) + "[ms]");
-            System.out.println();
+            System.out.println("Finished filling references, time: " + (System.currentTimeMillis() - t) + "[ms]");
         }
         
         System.out.println("TOTAL SUBJECTS: " + handler.getSubjects().size());
