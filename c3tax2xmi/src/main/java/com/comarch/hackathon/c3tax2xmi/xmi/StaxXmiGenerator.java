@@ -81,12 +81,22 @@ public class StaxXmiGenerator {
 		}
 	}
 	
-
+	private boolean isThereAChildToWrite(RdfSubject subject) {
+		for (RdfSubject child : subject.getChildren()) {
+			if (config.shouldWrite(child)) {
+				return true;
+			}
+			if (isThereAChildToWrite(child)) {
+				return true;
+			}
+		}
+		return false;
+	}
 	
 	private List<RdfSubject> getTaxonomyChildren(RdfSubject subject) {
 		List<RdfSubject> taxonomy = new ArrayList<>();
 		for (RdfSubject child : subject.getChildren()) {
-			if (config.shouldWrite(child)) {
+			if (config.shouldWrite(child) || isThereAChildToWrite(child)) {
 				taxonomy.add(child);
 			}
 		}
