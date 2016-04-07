@@ -53,15 +53,6 @@ public class Main {
         	return;
         }
         
-        if (cmd.hasOption(OPT_BATCH)) {
-        	if (cmd.hasOption(OPT_OUT)) {
-        		exporter.exportToFile(cmd.getOptionValue(OPT_OUT));
-        	} else {
-        		printHelp("Output file not specified", options);
-            	return;
-        	}
-        }
-        
         if (cmd.hasOption(OPT_LIMIT)) {
         	try {
         		int limit = Integer.parseInt(cmd.getOptionValue(OPT_LIMIT));
@@ -69,6 +60,15 @@ public class Main {
         	} catch (NumberFormatException e) {
         		System.err.println("Invalid limit value (" + e.toString() + ")");
         		return;
+        	}
+        }
+        
+        if (cmd.hasOption(OPT_BATCH)) {
+        	if (cmd.hasOption(OPT_OUT)) {
+        		exporter.exportToFile(cmd.getOptionValue(OPT_OUT));
+        	} else {
+        		printHelp("Output file not specified", options);
+            	return;
         	}
         }
         

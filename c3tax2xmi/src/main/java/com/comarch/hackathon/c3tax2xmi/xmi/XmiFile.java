@@ -1,12 +1,11 @@
 package com.comarch.hackathon.c3tax2xmi.xmi;
 
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 
 public class XmiFile extends XmiObject {
 
-	public XmiFile(XMLStreamWriter writer) {
-		super(writer);
+	public XmiFile(GeneratorConfig config) {
+		super(config);
 	}
 
 	@Override

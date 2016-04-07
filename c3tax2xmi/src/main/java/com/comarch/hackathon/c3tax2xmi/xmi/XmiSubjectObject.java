@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Set;
 
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 
 import com.comarch.hackathon.c3tax2xmi.model.RdfElement;
 import com.comarch.hackathon.c3tax2xmi.model.RdfSubject;
@@ -13,8 +12,8 @@ public abstract class XmiSubjectObject extends XmiObject {
 
 	protected RdfSubject subject;
 	
-	public XmiSubjectObject(XMLStreamWriter writer, RdfSubject subject) {
-		super(writer);
+	public XmiSubjectObject(GeneratorConfig config, RdfSubject subject) {
+		super(config);
 		this.subject = subject;
 	}
 
@@ -95,22 +94,14 @@ public abstract class XmiSubjectObject extends XmiObject {
 		writeDependency(name, toSubject.getExportId(), subject.getExportId());
 	}
 	
-	public boolean shouldWrite() {
-		return shouldWrite(subject);
-	}
-	
-	public static boolean shouldWrite(RdfSubject subject) {
-		return subject.hasAnyType(StaxXmiGenerator.DEFAULT_LEGAL_TYPES);
-	}
-	
 	protected void writeDependencies() throws XMLStreamException {
 		Set<String> referenceNames = subject.getAllReferencesNames();
 		
-		for(String refName: referenceNames) {
+		for (String refName: referenceNames) {
 			List<RdfSubject> list = subject.getReferecesByName(refName);
 			String refDisplayName = refName.split(":")[1].replaceAll("_", " ");
-			for(RdfSubject refSubject: list) {
-				if(shouldWrite(refSubject)) {
+			for (RdfSubject refSubject: list) {
+				if (config.shouldWrite(refSubject)) {
 					writeDependencyTo(refDisplayName, refSubject);
 				}
 			}

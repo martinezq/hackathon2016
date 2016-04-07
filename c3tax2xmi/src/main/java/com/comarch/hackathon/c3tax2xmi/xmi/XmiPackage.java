@@ -1,14 +1,13 @@
 package com.comarch.hackathon.c3tax2xmi.xmi;
 
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 
 import com.comarch.hackathon.c3tax2xmi.model.RdfSubject;
 
 public class XmiPackage extends XmiSubjectObject {
 	
-	public XmiPackage(XMLStreamWriter writer, RdfSubject subject) {
-		super(writer, subject);
+	public XmiPackage(GeneratorConfig config, RdfSubject subject) {
+		super(config, subject);
 	}
 
 	@Override

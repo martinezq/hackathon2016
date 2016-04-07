@@ -12,10 +12,12 @@ public abstract class XmiObject {
 	protected static final String cmofNs = "http://schema.omg.org/spec/MOF/2.0/cmof.xml";
 	protected static final String eol = "\n";
 	
-	protected XMLStreamWriter writer;
+	protected GeneratorConfig config;
+	XMLStreamWriter writer;
 	
-	public XmiObject(XMLStreamWriter writer) {
-		this.writer = writer;
+	public XmiObject(GeneratorConfig config) {
+		this.config = config;
+		this.writer = config.writer;
 	}
 	
 	public abstract void serialize() throws XMLStreamException;

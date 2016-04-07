@@ -7,46 +7,38 @@ import java.util.List;
 
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 
 import com.comarch.hackathon.c3tax2xmi.model.RdfSubject;
 
 public class StaxXmiGenerator {
 	
-	private int objectCountLimit = 1000;
+	private int objectCountLimit = 100000;
 
 	private int countdown;
 	private int countPackages;
 	private int countClasses;
 	
-	XMLStreamWriter writer;
+	GeneratorConfig config = new GeneratorConfig();
 	
 	private Collection<RdfSubject> subjects;
 	private RdfSubject root;
-	Collection<XmiObject> objects;
+	private Collection<XmiObject> objects;
+	private Collection<String> categoriesToExport;
 	
-	public static String[] DEFAULT_LEGAL_TYPES = {
-			"/Category-3ATaxonomy_Nodes", 
-			"/Category-3AServices", 
-			"/Category-3AApplications",
-			"/Category-3ABusiness_Processes",
-			"/Category-3AEquipment",
-			"/Category-3AInformation_Products"
-		};
-
 	public StaxXmiGenerator() {
 	}
 
 	public void write(String file) {
 		try {
+			
 			FileWriter fileWriter = new FileWriter(file);
 
 			XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newInstance();
-			writer = xmlOutputFactory.createXMLStreamWriter(fileWriter);
+			config.writer = xmlOutputFactory.createXMLStreamWriter(fileWriter);
 			
-			XmiFile xmiFile = new XmiFile(writer);
+			XmiFile xmiFile = new XmiFile(config);
 			xmiFile.writeStart();
-			XmiModel xmiModel = new XmiModel(writer);
+			XmiModel xmiModel = new XmiModel(config);
 			xmiModel.writeStart();
 			
 			countdown = objectCountLimit;
@@ -59,7 +51,7 @@ public class StaxXmiGenerator {
 			
 			xmiModel.writeEnd();
 			
-			XmiExtension xmiExtension = new XmiExtension(writer);
+			XmiExtension xmiExtension = new XmiExtension(config);
 			xmiExtension.writeStart();
 			for (XmiObject obj : objects) {
 				obj.extensionStart();
@@ -69,8 +61,8 @@ public class StaxXmiGenerator {
 			
 			xmiFile.writeEnd();
 
-			writer.flush();
-			writer.close();
+			config.writer.flush();
+			config.writer.close();
 			System.out.println("Generated packages: " + countPackages);
 			System.out.println("Generated classes: " + countClasses);
 			System.out.println("Finished. Total objects: " + objects.size());
@@ -82,7 +74,7 @@ public class StaxXmiGenerator {
 	private List<RdfSubject> getTaxonomyChildren(RdfSubject subject) {
 		List<RdfSubject> taxonomy = new ArrayList<>();
 		for (RdfSubject child : subject.getChildren()) {
-			if (XmiSubjectObject.shouldWrite(child)) {
+			if (config.shouldWrite(child)) {
 				taxonomy.add(child);
 			}
 		}
@@ -92,7 +84,7 @@ public class StaxXmiGenerator {
 	private void writePackageTree(RdfSubject subject) throws XMLStreamException {
 		List<RdfSubject> children = getTaxonomyChildren(subject);
 		if (!children.isEmpty()) {
-			XmiPackage xmiPackage = new XmiPackage(writer, subject);
+			XmiPackage xmiPackage = new XmiPackage(config, subject);
 			objects.add(xmiPackage);
 			xmiPackage.writeStart();
 			for (RdfSubject child : children) {
@@ -104,7 +96,7 @@ public class StaxXmiGenerator {
 			}
 			xmiPackage.writeEnd();
 		} else {
-			XmiClass xmiClass = new XmiClass(writer, subject);
+			XmiClass xmiClass = new XmiClass(config, subject);
 			xmiClass.serialize();
 			objects.add(xmiClass);
 			countClasses++;
@@ -133,6 +125,14 @@ public class StaxXmiGenerator {
 
 	public void setRoot(RdfSubject root) {
 		this.root = root;
+	}
+
+	public Collection<String> getCategoriesToExport() {
+		return categoriesToExport;
+	}
+
+	public void setCategoriesToExport(Collection<String> categoriesToExport) {
+		this.categoriesToExport = categoriesToExport;
 	}
 	
 }
