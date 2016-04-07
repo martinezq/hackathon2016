@@ -50,6 +50,7 @@ public class ImportExportDialog extends javax.swing.JDialog {
         initActions();
         initSubjectTree();
         initCategoryList();
+        initPosition();
     }
     
     /*public static void main(String args[]) {
@@ -205,6 +206,10 @@ public class ImportExportDialog extends javax.swing.JDialog {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+    
+    private void initPosition() {
+        GuiUtils.centreOnScreen(this);
     }
     
     private void initActions() {
