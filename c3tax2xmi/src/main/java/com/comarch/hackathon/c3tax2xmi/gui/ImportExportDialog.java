@@ -40,6 +40,21 @@ public class ImportExportDialog extends javax.swing.JDialog {
         initSubjectTree();
         initCategoryList();
     }
+    
+    /*public static void main(String args[]) {
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                ImportExportDialog dialog = new ImportExportDialog();
+                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                    @Override
+                    public void windowClosing(java.awt.event.WindowEvent e) {
+                        System.exit(0);
+                    }
+                });
+                dialog.setVisible(true);
+            }
+        });
+    }*/
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -176,7 +191,7 @@ public class ImportExportDialog extends javax.swing.JDialog {
 
     private void initLookAndFeel() {
         try {
-            UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception ex) {
             ex.printStackTrace();
         }
