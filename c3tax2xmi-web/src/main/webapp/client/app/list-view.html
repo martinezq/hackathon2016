@@ -3,9 +3,9 @@
 		<input type="checkbox" [checked]="allChecked" (click)="toggleAll()" />
 	</span> 
 	<span [class.bold]="allChecked" class="all">SELECT ALL</span>
-	<li *ngFor="#cat of categories">
+	<li *ngFor="#cat of categories" >
 		<span>
-			<input type="checkbox" [checked]="cat.checked" (click)="cat.check()" />
+			<input type="checkbox" [checked]="cat.checked" (click)="toggle(cat)" />
 		</span> 
 		<span [class.bold]="cat.checked">{{cat.name}}</span>
 	</li>

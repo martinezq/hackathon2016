@@ -201,3 +201,7 @@ div#categories {
 button.large {
 	width: 200px;
 }
+
+.highlighted {
+	background-color: white;
+}

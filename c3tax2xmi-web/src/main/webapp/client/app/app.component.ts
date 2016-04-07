@@ -16,6 +16,8 @@ export class AppComponent {
     subjects: any;
     categories: any;
     
+    tree: TreeView;
+    
     constructor(private http: Http) {
         this.refresh();
     }
@@ -40,7 +42,7 @@ export class AppComponent {
     
     private createSubjects(json: any, level = 0) {
         if(json) {
-            let data = json.map(obj => new Subject(obj.id, obj.name, this.createSubjects(obj.children, level + 1), level < 3));
+            let data = json.map(obj => new Subject(obj.id, obj.name, this.createSubjects(obj.children, level + 1), obj.categories, level < 3));
             data.sort((a, b) => a.name.localeCompare(b.name));
             return data;
         } else {
@@ -113,5 +115,9 @@ export class AppComponent {
             },
             err => console.error(err)
         ); 
+    }
+    
+    categoriesChanged(selectedCategories) {
+        this.tree.highlight(selectedCategories);            
     }
 }

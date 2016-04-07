@@ -1,9 +1,9 @@
 <ul>
-	<li *ngFor="#sub of subjects">
+	<li *ngFor="#sub of subjects" >
 		<span>
 			<input type="checkbox" [checked]="sub.checked" (click)="sub.check()" />
 		</span> 
-		<span (click)="sub.toggle()" [class.bold]="sub.checked">{{ sub.name }}</span>
+		<span (click)="sub.toggle()" [class.bold]="sub.checked" [class.highlighted]="sub.highlighted">{{ sub.name }}</span>
 		<span class="info-blue" (click)="sub.toggle()" *ngIf="!sub.expanded && sub.children.length > 0">(click to expand)</span>
 		<span class="info-green" (click)="sub.toggle()" *ngIf="sub.expanded && sub.children.length > 0">(click to collapse)</span>
 		<div *ngIf="sub.expanded">

@@ -10,7 +10,7 @@ export class Category{
         this.checked = false;
     }
     
-    check(){
+    toggle(){
         let newState = !this.checked;
         this.checked = newState;
     }

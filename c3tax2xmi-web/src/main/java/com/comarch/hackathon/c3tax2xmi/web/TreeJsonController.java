@@ -50,6 +50,19 @@ public class TreeJsonController {
 		obj.put("id", subject.getExportId());
 		obj.put("name", subject.getExportName());
 		obj.put("ref", subject.getAbout());
+		
+		Collection<String> categories = subject.getTypes();
+		
+		if(categories != null) {
+			JSONArray categoriesArray = new JSONArray();
+			for(String cat: categories) {
+				String[] parts = cat.split("/");
+				categoriesArray.put("/" + parts[parts.length - 1]);
+			}
+			
+			obj.put("categories", categoriesArray);
+		}
+		
 
 		if (!subject.getChildren().isEmpty()) {
 
