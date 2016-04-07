@@ -1,10 +1,15 @@
 <div id="container">
 	<div id="top">
 		<button class="large" (click)="refresh()">Refresh</button>
+		<h1>C3 Taxonomy to XMI exporter</h1>
+		<p>
+			Select taxonomy elements and categories and press "Export".<br/>
+			User "Refresh" button to reload lists on page.
+		</p>
 		<button class="large" (click)="export()">Export</button>
 	</div>
 
-	<div id="bottom">
+	<div id="center">
 		<div id="subjects">
 			<h2>Select elements:</h2>
 			<tree-view [subjects]="subjects"></tree-view>	
@@ -14,4 +19,5 @@
 			<list-view [categories]="categories" (onChange)="categoriesChanged($event)"></list-view>
 		</div>
 	</div>
+
 </div>
