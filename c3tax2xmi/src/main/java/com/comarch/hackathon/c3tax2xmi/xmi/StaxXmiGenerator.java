@@ -23,7 +23,6 @@ public class StaxXmiGenerator {
 	private Collection<RdfSubject> subjects;
 	private RdfSubject root;
 	private Collection<XmiObject> objects;
-	private Collection<String> categoriesToExport;
 	
 	public StaxXmiGenerator() {
 	}
@@ -128,11 +127,11 @@ public class StaxXmiGenerator {
 	}
 
 	public Collection<String> getCategoriesToExport() {
-		return categoriesToExport;
+		return config.getCategoriesToExport();
 	}
 
 	public void setCategoriesToExport(Collection<String> categoriesToExport) {
-		this.categoriesToExport = categoriesToExport;
+		config.setCategoriesToExport(categoriesToExport);
 	}
 	
 }

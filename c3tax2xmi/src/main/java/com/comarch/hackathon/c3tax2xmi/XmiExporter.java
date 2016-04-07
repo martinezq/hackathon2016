@@ -2,6 +2,7 @@ package com.comarch.hackathon.c3tax2xmi;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -52,6 +53,10 @@ public class XmiExporter {
 
 	public void setLimit(int limit) {
 		generator.setObjectCountLimit(limit);
+	}
+
+	public void setCategoriesToExport(Collection<String> categoriesToExport) {
+		generator.setCategoriesToExport(categoriesToExport);
 	}
 	
 }
