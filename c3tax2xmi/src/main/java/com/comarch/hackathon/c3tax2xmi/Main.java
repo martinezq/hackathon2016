@@ -12,6 +12,8 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.xml.sax.SAXException;
 
+import com.comarch.hackathon.c3tax2xmi.gui.ImportExportDialog;
+
 public class Main {
 	
 	private static final String OPT_OUT = "o";
@@ -93,6 +95,23 @@ public class Main {
         }
         
         // Start GUI here.
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                ImportExportDialog dialog = new ImportExportDialog();
+                dialog.setParser(exporter.getParser());
+                if (cmd.hasOption(OPT_FILE)) {
+                	dialog.getImportFilePathText().setText(cmd.getOptionValue(OPT_FILE));
+                	dialog.refreshTree();
+                }
+                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                    @Override
+                    public void windowClosing(java.awt.event.WindowEvent e) {
+                        System.exit(0);
+                    }
+                });
+                dialog.setVisible(true);
+            }
+        });
 
 	}
 	

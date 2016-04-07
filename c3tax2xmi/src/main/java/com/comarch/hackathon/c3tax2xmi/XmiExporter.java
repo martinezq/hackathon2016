@@ -69,5 +69,9 @@ public class XmiExporter {
 	public void setWriteExtensions(boolean b) {
 		generator.setWriteExtensions(b);
 	}
+
+	public C3TaxParser getParser() {
+		return parser;
+	}
 	
 }
