@@ -103,12 +103,25 @@ public class StaxXmiGenerator {
 		return taxonomy;
 	}
 	
+	private boolean isThereSubChildToWrite(RdfSubject subject) {
+		for (RdfSubject child : subject.getChildren()) {
+			if (subjects.contains(child)) {
+				return true;
+			}
+			if (isThereSubChildToWrite(child)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	private void writePackageTree(RdfSubject subject) throws XMLStreamException {
 		boolean shouldWrite = subjects.contains(subject);
 		List<RdfSubject> children = getTaxonomyChildren(subject);
 		if (!children.isEmpty()) {
 			XmiPackage xmiPackage = new XmiPackage(config, subject);
-			if (shouldWrite) {
+			boolean shouldWritePackage = shouldWrite || isThereSubChildToWrite(subject);
+			if (shouldWritePackage) {
 				objects.add(xmiPackage);
 				xmiPackage.writeStart();
 			}
@@ -119,7 +132,7 @@ public class StaxXmiGenerator {
 				writePackageTree(child);
 				countPackages++;
 			}
-			if (shouldWrite) {
+			if (shouldWritePackage) {
 				xmiPackage.writeEnd();
 			}
 		} else {
@@ -166,6 +179,14 @@ public class StaxXmiGenerator {
 
 	public void setWriteExtensions(boolean b) {
 		this.writeExtensions = b;
+	}
+
+	public Collection<XmiObject> getObjects() {
+		return objects;
+	}
+
+	public void setObjects(Collection<XmiObject> objects) {
+		this.objects = objects;
 	}
 	
 }

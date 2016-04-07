@@ -109,6 +109,7 @@ public class Main {
 	                if (cmd.hasOption(OPT_FILE)) {
 	                	dialog.getImportFilePathText().setText(cmd.getOptionValue(OPT_FILE));
 	                	dialog.refreshSubjectTree();
+	                	dialog.refreshCategoryList();
 	                }
 	                if (cmd.hasOption(OPT_OUT)) {
 	                	dialog.getExportFilePathText().setText(cmd.getOptionValue(OPT_OUT));

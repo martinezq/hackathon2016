@@ -86,6 +86,11 @@ public class RdfSubject extends RdfBaseObject {
         return getElementValue(ELEM_TITLE);
     }
     
+    @Override
+    public String toString() {
+    	return getExportName();
+    }
+    
     public String getExportName() {
     	String name = getTitle();
     	if (name == null) {

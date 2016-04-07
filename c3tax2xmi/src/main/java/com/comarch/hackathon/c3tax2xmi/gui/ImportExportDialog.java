@@ -284,7 +284,7 @@ public class ImportExportDialog extends javax.swing.JDialog {
                         
                         // Info
                         setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-                        info("Writing XMI finished, time: " + (System.currentTimeMillis() - t) + "[ms]");
+                        info("Writing XMI finished, objects: " + generator.getObjects().size() + ",time: " + (System.currentTimeMillis() - t) + "[ms]");
                     } else {
                         JOptionPane.showMessageDialog(ImportExportDialog.this, "Select objects to export", "Export file error", JOptionPane.ERROR_MESSAGE);
                     }
@@ -303,7 +303,8 @@ public class ImportExportDialog extends javax.swing.JDialog {
         });
     }
     
-    private void initCategoryList() {
+    @SuppressWarnings("serial")
+	private void initCategoryList() {
         categoryList.setModel(new DefaultListModel<>());
         categoryList.setCellRenderer(new DefaultListCellRenderer(){
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
@@ -316,8 +317,9 @@ public class ImportExportDialog extends javax.swing.JDialog {
         });
     }
     
-    private void refreshCategoryList() {
-        DefaultListModel model = (DefaultListModel)categoryList.getModel();
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	public void refreshCategoryList() {
+		DefaultListModel model = (DefaultListModel)categoryList.getModel();
         model.removeAllElements();
         if (parser.getHandler().getSubjects() != null) {
             Collection<String> categories = RdfUtils.findUniqueRdfTypes(parser.getHandler().getSubjects());
@@ -372,7 +374,6 @@ public class ImportExportDialog extends javax.swing.JDialog {
             @Override
             public Component getTreeCellEditorComponent(JTree tree, Object value, boolean isSelected, boolean expanded, boolean leaf, int row) {
                 if (value instanceof DefaultMutableTreeNode) {
-                    DefaultTreeModel treeModel = ((DefaultTreeModel)subjectTree.getModel());
                     DefaultMutableTreeNode node = (DefaultMutableTreeNode)value;
                     if (node.getUserObject() instanceof SubjectTreeNode) {
                         SubjectTreeNode subjectTreeNode = (SubjectTreeNode)node.getUserObject();
