@@ -23,7 +23,7 @@ public class GeneratorConfig {
 	private Collection<String> categoriesToExport = Arrays.asList(DEFAULT_CATEGORIES);
 
 	public boolean shouldWrite(RdfSubject subject) {
-		return subject.hasAnyType(DEFAULT_CATEGORIES);
+		return subject.hasAnyType(categoriesToExport);
 	}
 
 	public Collection<String> getCategoriesToExport() {

@@ -180,13 +180,12 @@ public class RdfSubject extends RdfBaseObject {
 		return referencesByName.keySet();
 	}
 
-	public boolean hasAnyType(String[] legalTypes) {
-		for(String legalType: legalTypes) {
-			if(hasType(legalType)) {
+	public boolean hasAnyType(Collection<String> legalTypes) {
+		for (String legalType: legalTypes) {
+			if (hasType(legalType)) {
 				return true;
 			}
 		}
-		
 		return false;
 	}
 }
