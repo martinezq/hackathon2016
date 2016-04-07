@@ -39,12 +39,12 @@ public class XmiGeneratorUtil {
 		String[] groupsArray = subObjectGroups.keySet().toArray(new String[subObjectGroups.keySet().size()]); 
 		Arrays.sort(groupsArray);
 		
-		for(String group: groupsArray) {
+		for (String group: groupsArray) {
 			List<RdfSubject> list = subObjectGroups.get(group);
 			sb.append("<br>\n");
 			sb.append("<b>" + group + "</b>:<br/>\n");
 			
-			for(RdfSubject subObject: list) {
+			for (RdfSubject subObject: list) {
 				sb.append("  " + objectProperties(subObject));
 				sb.append("<br/>");
 			}
@@ -53,7 +53,7 @@ public class XmiGeneratorUtil {
 		
 		String result = sb.toString();
 		
-		if(result.length() < 0) {
+		if (result.length() < 0) {
 			System.out.println(result);
 			System.out.println("--");
 		}

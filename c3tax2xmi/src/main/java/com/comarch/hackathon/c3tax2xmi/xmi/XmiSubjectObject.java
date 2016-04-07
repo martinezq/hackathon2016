@@ -58,7 +58,9 @@ public abstract class XmiSubjectObject extends XmiObject {
 		}
 
 		String subObjectsDescription = XmiGeneratorUtil.subObjectsDescription(subject);
-		writeComment(subObjectsDescription);
+		if (!subObjectsDescription.isEmpty()) {
+			writeComment(subObjectsDescription);
+		}
 	}
 	
 	@Override

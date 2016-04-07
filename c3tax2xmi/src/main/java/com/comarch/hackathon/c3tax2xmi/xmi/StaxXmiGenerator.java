@@ -94,11 +94,14 @@ public class StaxXmiGenerator {
 	}
 	
 	private void writePackageTree(RdfSubject subject) throws XMLStreamException {
+		boolean shouldWrite = subjects.contains(subject);
 		List<RdfSubject> children = getTaxonomyChildren(subject);
 		if (!children.isEmpty()) {
 			XmiPackage xmiPackage = new XmiPackage(config, subject);
-			objects.add(xmiPackage);
-			xmiPackage.writeStart();
+			if (shouldWrite) {
+				objects.add(xmiPackage);
+				xmiPackage.writeStart();
+			}
 			for (RdfSubject child : children) {
 				if (--countdown <= 0) {
 					break;
@@ -106,12 +109,16 @@ public class StaxXmiGenerator {
 				writePackageTree(child);
 				countPackages++;
 			}
-			xmiPackage.writeEnd();
+			if (shouldWrite) {
+				xmiPackage.writeEnd();
+			}
 		} else {
-			XmiClass xmiClass = new XmiClass(config, subject);
-			xmiClass.serialize();
-			objects.add(xmiClass);
-			countClasses++;
+			if (shouldWrite) {
+				XmiClass xmiClass = new XmiClass(config, subject);
+				xmiClass.serialize();
+				objects.add(xmiClass);
+				countClasses++;
+			}
 		}
 	}
 
