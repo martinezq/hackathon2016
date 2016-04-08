@@ -93,8 +93,10 @@ public class ImportExportDialog extends javax.swing.JDialog {
         exportButton = new javax.swing.JButton();
         closeButton = new javax.swing.JButton();
         infoLabel = new javax.swing.JLabel();
-        searchTextField = new javax.swing.JTextField();
-        searchButton = new javax.swing.JButton();
+        searchSubjectTextField = new javax.swing.JTextField();
+        searchSubjectButton = new javax.swing.JButton();
+        searchCategoryButton = new javax.swing.JButton();
+        searchCategoryTextField = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Comarch RDF converter");
@@ -126,7 +128,9 @@ public class ImportExportDialog extends javax.swing.JDialog {
 
         infoLabel.setText(" ");
 
-        searchButton.setText("Search");
+        searchSubjectButton.setText("Search");
+
+        searchCategoryButton.setText("Search");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -151,7 +155,10 @@ public class ImportExportDialog extends javax.swing.JDialog {
                         .addComponent(selectExportFileButton))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(categoryLabel)
-                        .addGap(0, 0, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(searchCategoryTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(searchCategoryButton))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(importFileLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -159,9 +166,9 @@ public class ImportExportDialog extends javax.swing.JDialog {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(selectImportFileButton)
                         .addGap(18, 18, 18)
-                        .addComponent(searchTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(searchSubjectTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(searchButton)))
+                        .addComponent(searchSubjectButton)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -172,12 +179,15 @@ public class ImportExportDialog extends javax.swing.JDialog {
                     .addComponent(importFileLabel)
                     .addComponent(importFilePathText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(selectImportFileButton)
-                    .addComponent(searchTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(searchButton))
+                    .addComponent(searchSubjectTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(searchSubjectButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(subjectScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 277, Short.MAX_VALUE)
+                .addComponent(subjectScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 268, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(categoryLabel)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(categoryLabel)
+                    .addComponent(searchCategoryButton)
+                    .addComponent(searchCategoryTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(categoryScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -207,8 +217,10 @@ public class ImportExportDialog extends javax.swing.JDialog {
     private javax.swing.JLabel importFileLabel;
     private javax.swing.JTextField importFilePathText;
     private javax.swing.JLabel infoLabel;
-    private javax.swing.JButton searchButton;
-    private javax.swing.JTextField searchTextField;
+    private javax.swing.JButton searchCategoryButton;
+    private javax.swing.JTextField searchCategoryTextField;
+    private javax.swing.JButton searchSubjectButton;
+    private javax.swing.JTextField searchSubjectTextField;
     private javax.swing.JButton selectExportFileButton;
     private javax.swing.JButton selectImportFileButton;
     private javax.swing.JScrollPane subjectScrollPane;
@@ -245,13 +257,6 @@ public class ImportExportDialog extends javax.swing.JDialog {
                     setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
                     info("Parsing RDF file finished, time: " + (System.currentTimeMillis() - t) + "[ms]");
                 }
-            }
-        });
-        
-        searchButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                searchAction();
             }
         });
         
@@ -310,7 +315,14 @@ public class ImportExportDialog extends javax.swing.JDialog {
             }
         });
         
-        searchTextField.addKeyListener(new KeyListener() {
+        searchSubjectButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                searchSubjectAction();
+            }
+        });
+        
+        searchSubjectTextField.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
             }
@@ -318,7 +330,31 @@ public class ImportExportDialog extends javax.swing.JDialog {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    searchAction();
+                    searchSubjectAction();
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+            }
+        });
+        
+        searchCategoryButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                searchCategoryAction();
+            }
+        });
+        
+        searchCategoryTextField.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    searchCategoryAction();
                 }
             }
 
@@ -328,11 +364,11 @@ public class ImportExportDialog extends javax.swing.JDialog {
         });
     }
     
-    private void searchAction() {
+    private void searchSubjectAction() {
         Collection<DefaultMutableTreeNode> allNodes = getTreeNodes();
         if (allNodes != null) {
-            if (searchTextField.getText() != null && !searchTextField.getText().isEmpty()) {
-                String filter = searchTextField.getText().toUpperCase();
+            if (searchSubjectTextField.getText() != null && !searchSubjectTextField.getText().isEmpty()) {
+                String filter = searchSubjectTextField.getText().toUpperCase();
                 for (DefaultMutableTreeNode node : allNodes) {
                     if (node.getUserObject() instanceof SubjectTreeNode) {
                         SubjectTreeNode subjectTreeNode = (SubjectTreeNode) node.getUserObject();
@@ -356,6 +392,22 @@ public class ImportExportDialog extends javax.swing.JDialog {
                 }
             }
             subjectTree.repaint();
+        }
+    }
+    
+    private void searchCategoryAction() {
+        if (searchCategoryTextField.getText() != null && !searchCategoryTextField.getText().isEmpty()) {
+            String filter = searchCategoryTextField.getText().toUpperCase();
+            Collection<String> allCategories = getCategories();
+            int index = 0;
+            for (String cat : allCategories) {
+                String name = RdfUtils.getRdfTypeFriendlyName(cat);
+                if (name != null && name.toUpperCase().contains(filter)) {
+                    categoryList.ensureIndexIsVisible(index);
+                    break;
+                }
+                index ++;
+            }
         }
     }
     
@@ -634,6 +686,14 @@ public class ImportExportDialog extends javax.swing.JDialog {
     
     private Collection<String> getSelectedCategories() {
         return categoryList.getSelectedValuesList();
+    }
+    
+    private Collection<String> getCategories() {
+        Collection<String> result = new ArrayList<>();
+        for (int i = 0; i < categoryList.getModel().getSize(); i ++) {
+            result.add(categoryList.getModel().getElementAt(i));
+        }
+        return result;
     }
     
     private void info(String info) {
