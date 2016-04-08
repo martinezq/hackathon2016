@@ -9,6 +9,8 @@ import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,6 +33,7 @@ import javax.swing.tree.DefaultTreeCellEditor;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 
 /**
  *
@@ -90,6 +93,8 @@ public class ImportExportDialog extends javax.swing.JDialog {
         exportButton = new javax.swing.JButton();
         closeButton = new javax.swing.JButton();
         infoLabel = new javax.swing.JLabel();
+        searchTextField = new javax.swing.JTextField();
+        searchButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Comarch RDF converter");
@@ -121,6 +126,8 @@ public class ImportExportDialog extends javax.swing.JDialog {
 
         infoLabel.setText(" ");
 
+        searchButton.setText("Search");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -130,12 +137,6 @@ public class ImportExportDialog extends javax.swing.JDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(categoryScrollPane)
                     .addComponent(subjectScrollPane)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(importFileLabel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(importFilePathText)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(selectImportFileButton))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(infoLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -150,7 +151,17 @@ public class ImportExportDialog extends javax.swing.JDialog {
                         .addComponent(selectExportFileButton))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(categoryLabel)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(importFileLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(importFilePathText)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(selectImportFileButton)
+                        .addGap(18, 18, 18)
+                        .addComponent(searchTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(searchButton)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -160,7 +171,9 @@ public class ImportExportDialog extends javax.swing.JDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(importFileLabel)
                     .addComponent(importFilePathText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(selectImportFileButton))
+                    .addComponent(selectImportFileButton)
+                    .addComponent(searchTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(searchButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(subjectScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 277, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -194,6 +207,8 @@ public class ImportExportDialog extends javax.swing.JDialog {
     private javax.swing.JLabel importFileLabel;
     private javax.swing.JTextField importFilePathText;
     private javax.swing.JLabel infoLabel;
+    private javax.swing.JButton searchButton;
+    private javax.swing.JTextField searchTextField;
     private javax.swing.JButton selectExportFileButton;
     private javax.swing.JButton selectImportFileButton;
     private javax.swing.JScrollPane subjectScrollPane;
@@ -230,6 +245,13 @@ public class ImportExportDialog extends javax.swing.JDialog {
                     setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
                     info("Parsing RDF file finished, time: " + (System.currentTimeMillis() - t) + "[ms]");
                 }
+            }
+        });
+        
+        searchButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                searchAction();
             }
         });
         
@@ -287,6 +309,54 @@ public class ImportExportDialog extends javax.swing.JDialog {
                 System.exit(0);
             }
         });
+        
+        searchTextField.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    searchAction();
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+            }
+        });
+    }
+    
+    private void searchAction() {
+        Collection<DefaultMutableTreeNode> allNodes = getTreeNodes();
+        if (allNodes != null) {
+            if (searchTextField.getText() != null && !searchTextField.getText().isEmpty()) {
+                String filter = searchTextField.getText().toUpperCase();
+                for (DefaultMutableTreeNode node : allNodes) {
+                    if (node.getUserObject() instanceof SubjectTreeNode) {
+                        SubjectTreeNode subjectTreeNode = (SubjectTreeNode) node.getUserObject();
+                        subjectTreeNode.setMarked(false);
+
+                        if (subjectTreeNode.getSubject().getExportName() != null
+                                && subjectTreeNode.getSubject().getExportName().toUpperCase().contains(filter)) {
+                            subjectTreeNode.setMarked(true);
+                            TreePath path = new TreePath(node.getPath());
+                            subjectTree.expandPath(path);
+                            subjectTree.scrollPathToVisible(path);
+                        }
+                    }
+                }
+            } else {
+                for (DefaultMutableTreeNode node : allNodes) {
+                    if (node.getUserObject() instanceof SubjectTreeNode) {
+                        SubjectTreeNode subjectTreeNode = (SubjectTreeNode) node.getUserObject();
+                        subjectTreeNode.setMarked(false);
+                    }
+                }
+            }
+            subjectTree.repaint();
+        }
     }
     
     @SuppressWarnings("serial")
@@ -361,7 +431,9 @@ public class ImportExportDialog extends javax.swing.JDialog {
                     if (node.getUserObject() instanceof SubjectTreeNode) {
                         SubjectTreeNode subjectTreeNode = (SubjectTreeNode)node.getUserObject();
                         JCheckBox checkBox = new JCheckBox(subjectTreeNode.getSubject().getExportName(), subjectTreeNode.isChecked());
-                        if (subjectTreeNode.isSelected()) {
+                        if (subjectTreeNode.isMarked()) {
+                            checkBox.setBackground(java.awt.Color.RED);
+                        } else if (subjectTreeNode.isSelected()) {
                             checkBox.setBackground(categoryList.getSelectionBackground());
                         } else {
                             checkBox.setBackground(subjectTree.getBackground());
@@ -382,10 +454,12 @@ public class ImportExportDialog extends javax.swing.JDialog {
                     if (node.getUserObject() instanceof SubjectTreeNode) {
                         SubjectTreeNode subjectTreeNode = (SubjectTreeNode)node.getUserObject();
                         JCheckBox checkBox = new JCheckBox(subjectTreeNode.getSubject().getExportName(), subjectTreeNode.isChecked());
-                        if (subjectTreeNode.isSelected()) {
+                        if (subjectTreeNode.isMarked()) {
+                            checkBox.setBackground(java.awt.Color.RED);
+                        } else if (subjectTreeNode.isSelected()) {
                             checkBox.setBackground(categoryList.getSelectionBackground());
                         } else {
-                            checkBox.setBackground(tree.getBackground());
+                            checkBox.setBackground(subjectTree.getBackground());
                         }
                         checkBox.addActionListener(new ActionListener() {
                             @Override
@@ -469,7 +543,7 @@ public class ImportExportDialog extends javax.swing.JDialog {
     
     private DefaultMutableTreeNode subjectToNode(RdfSubject subject) {
         if (subject != null) {
-            return new DefaultMutableTreeNode(new SubjectTreeNode(subject, true, false));
+            return new DefaultMutableTreeNode(new SubjectTreeNode(subject, true, false, false));
         } 
         return null;
     }
@@ -501,35 +575,57 @@ public class ImportExportDialog extends javax.swing.JDialog {
     
     public Collection<SubjectTreeNode> getSubjectTreeNodes() {
         Collection<SubjectTreeNode> result = new ArrayList<>();
-        DefaultTreeModel treeModel = ((DefaultTreeModel)subjectTree.getModel());
-        if (treeModel.getRoot() instanceof DefaultMutableTreeNode) {
-            DefaultMutableTreeNode root = (DefaultMutableTreeNode)treeModel.getRoot();
-            if (root.getUserObject() instanceof SubjectTreeNode) {
-                SubjectTreeNode subjectTreeNode = (SubjectTreeNode)root.getUserObject();
-                result.add(subjectTreeNode);
-
-                Collection<SubjectTreeNode> children = getSubjectTreeNodes(root);
-                if (children != null) {
-                    result.addAll(children);
+        Collection<DefaultMutableTreeNode> treeNodes = getTreeNodes();
+        if (treeNodes != null) {
+            for (DefaultMutableTreeNode treeNode : treeNodes) {
+                if (treeNode.getUserObject() instanceof SubjectTreeNode) {
+                    result.add((SubjectTreeNode)treeNode.getUserObject());
                 }
             }
         }
         return result;
     }
     
-    private Collection<SubjectTreeNode> getSubjectTreeNodes(DefaultMutableTreeNode parentNode) {
+    public Collection<SubjectTreeNode> getSubjectTreeNodes(DefaultMutableTreeNode parentNode) {
         Collection<SubjectTreeNode> result = new ArrayList<>();
+        Collection<DefaultMutableTreeNode> treeNodes = getTreeNodes(parentNode);
+        if (treeNodes != null) {
+            for (DefaultMutableTreeNode treeNode : treeNodes) {
+                if (treeNode.getUserObject() instanceof SubjectTreeNode) {
+                    result.add((SubjectTreeNode)treeNode.getUserObject());
+                }
+            }
+        }
+        return result;
+    }
+    
+    public Collection<DefaultMutableTreeNode> getTreeNodes() {
+        Collection<DefaultMutableTreeNode> result = new ArrayList<>();
+        DefaultTreeModel treeModel = ((DefaultTreeModel)subjectTree.getModel());
+        if (treeModel.getRoot() instanceof DefaultMutableTreeNode) {
+            DefaultMutableTreeNode root = (DefaultMutableTreeNode)treeModel.getRoot();
+            
+            result.add(root);
+
+            Collection<DefaultMutableTreeNode> children = getTreeNodes(root);
+            if (children != null) {
+                result.addAll(children);
+            }
+        }
+        return result;
+    }
+    
+    public Collection<DefaultMutableTreeNode> getTreeNodes(DefaultMutableTreeNode parentNode) {
+        Collection<DefaultMutableTreeNode> result = new ArrayList<>();
         for (int i = 0; i < parentNode.getChildCount(); i ++) {
             if (parentNode.getChildAt(i) instanceof DefaultMutableTreeNode) {
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode)parentNode.getChildAt(i);
-                if (node.getUserObject() instanceof SubjectTreeNode) {
-                    SubjectTreeNode subjectTreeNode = (SubjectTreeNode)node.getUserObject();
-                    result.add(subjectTreeNode);
 
-                    Collection<SubjectTreeNode> children = getSubjectTreeNodes(node);
-                    if (children != null) {
-                        result.addAll(children);
-                    }
+                result.add(node);
+
+                Collection<DefaultMutableTreeNode> children = getTreeNodes(node);
+                if (children != null) {
+                    result.addAll(children);
                 }
             }
         }

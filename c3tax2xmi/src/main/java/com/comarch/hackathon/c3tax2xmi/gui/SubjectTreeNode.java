@@ -10,11 +10,13 @@ public class SubjectTreeNode {
     private RdfSubject subject;
     private boolean checked = true;
     private boolean selected = false;
+    private boolean marked = false;
 
-    public SubjectTreeNode(RdfSubject subject, boolean checked, boolean selected) {
+    public SubjectTreeNode(RdfSubject subject, boolean checked, boolean selected, boolean marked) {
         this.subject = subject;
         this.checked = checked;
         this.selected = selected;
+        this.marked = marked;
     }
 
     public RdfSubject getSubject() {
@@ -39,6 +41,14 @@ public class SubjectTreeNode {
 
     public void setSelected(boolean selected) {
         this.selected = selected;
+    }
+
+    public boolean isMarked() {
+        return marked;
+    }
+
+    public void setMarked(boolean marked) {
+        this.marked = marked;
     }
     
 }
