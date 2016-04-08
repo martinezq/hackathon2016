@@ -2,8 +2,10 @@
 h1 {
   color: #369; 
   font-family: Arial, Helvetica, sans-serif;   
-  font-size: 160%;
+  font-size: 120%;
   margin: 0;
+  min-width: 280px;
+  padding: 5px;
   
 }
 h2, h3 { 
@@ -14,6 +16,8 @@ h2, h3 {
 }
 p {
 	margin: 0;
+	font-size: 80%;
+	overflow: hidden;
 }
 body { 
   margin: 0; 
@@ -165,7 +169,7 @@ div#container {
 }
 
 div#top {
-	padding: 1em;
+	padding: 0.5em;
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
@@ -208,7 +212,7 @@ div#categories {
 }
 
 button.large {
-	width: 200px;
+	width: 150px;
 }
 
 .highlighted {
